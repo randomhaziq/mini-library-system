@@ -12,13 +12,33 @@ public class Book {
     private int bookID;
     private String title;
     private String author;
+    private String publisher;
+    private String category;
     private boolean isAvailable;
-    
-    public Book(int bookID, String title, String author, boolean isAvailable) {
+
+    public Book(int bookID, String title, String author, String publisher, String category) {
         this.bookID = bookID;
         this.title = title;
         this.author = author;
+        this.publisher = publisher;
+        this.category = category;
         this.isAvailable = true;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public int getBookID() {
@@ -45,11 +65,11 @@ public class Book {
         this.author = author;
     }
 
-    public boolean isIsAvailable() {
+    public boolean isAvailable() {
         return isAvailable;
     }
 
-    public void setIsAvailable(boolean isAvailable) {
+    public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
     

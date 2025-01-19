@@ -10,9 +10,9 @@ package mini_library;
  */
 public class Fiction_Book extends Book{
     private String genre;
-    
-    public Fiction_Book(int bookID, String title, String author, boolean isAvailable, String genre) {
-        super(bookID, title, author, isAvailable);
+
+    public Fiction_Book(int bookID, String title, String author, String publisher, String category, String genre) {
+        super(bookID, title, author, publisher, category);
         this.genre = genre;
     }
 

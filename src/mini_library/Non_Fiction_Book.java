@@ -10,9 +10,9 @@ package mini_library;
  */
 public class Non_Fiction_Book extends Book{
     private String subject;
-    
-    public Non_Fiction_Book(int bookID, String title, String author, boolean isAvailable, String subject) {
-        super(bookID, title, author, isAvailable);
+
+    public Non_Fiction_Book(int bookID, String title, String author, String publisher, String category, String subject) {
+        super(bookID, title, author, publisher, category);
         this.subject = subject;
     }
 
