@@ -495,7 +495,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     public Book searchBook(String searchToken) {
         for (Book book : bookList) {
             if (book.getAuthor().equalsIgnoreCase(searchToken) || book.getTitle().contains(searchToken)) {
-                JOptionPane.showMessageDialog(null, "Book is found!");
+//                JOptionPane.showMessageDialog(null, "Book is found!");
 
                 if (book instanceof Fiction_Book) {
                     model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
@@ -504,10 +504,10 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                     model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Non_Fiction_Book) book).getSubject()});
 
                 }
-                break;
+                return book;
             }
         }
-        JOptionPane.showMessageDialog(null, "Book is not found.");
+//        JOptionPane.showMessageDialog(null, "Book is not found.");
         return null;
     }
 
@@ -539,10 +539,19 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         //check if either field is filled before proceed to search
         if (!title.isEmpty()) {
-            searchBook(title);
+            if (searchBook(title) != null) {
+                JOptionPane.showMessageDialog(null, "Book is found.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Book is not found.");
+            }
 
         } else if (!author.isEmpty()) {
-            searchBook(author);
+            if (searchBook(author) != null) {
+                JOptionPane.showMessageDialog(null, "Book is found.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Book is not found.");
+            }
+            
         }
 
     }//GEN-LAST:event_searchBtnActionPerformed
@@ -560,6 +569,13 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             return;
         }
 
+        int id = Integer.parseInt(bookidTF.getText());
+
+        if (!isBookIDExist(id)) {
+            JOptionPane.showMessageDialog(null, "There is no such book is found with this Book ID: " + id);
+            return;
+        }
+        
         String title = titleTF.getText();
         String author = authorTF.getText();
         String publisher = publisherTF.getText();
@@ -568,8 +584,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         int choice = JOptionPane.showConfirmDialog(null, "You are editing this book information. \nDo you want to apply these changes?", "Update Book Information", JOptionPane.YES_NO_OPTION);
 
-        int id = Integer.parseInt(bookidTF.getText());
-
+        
         if (choice == JOptionPane.YES_OPTION) {
             for (Book b : bookList) {
                 if (b.getBookID() == id) {
@@ -595,8 +610,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 }
             }
             JOptionPane.showMessageDialog(null, "Update is successful.");
-//            model.setRowCount(0);
-//            model.addRow(new Object[]{String.valueOf(id), title, author, publisher, category, genre_subject});
+
         } else {
             JOptionPane.showMessageDialog(null, "No changes is made.");
         }
@@ -632,21 +646,21 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             return;
 
         }
-        int id = -1;
-
-        try {
-            id = Integer.parseInt(bookidTF.getText());
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Please select a record to delete first.");
-            return;
-        }
+//        int id = -1;
+//
+//        try {
+//            id = Integer.parseInt(bookidTF.getText());
+//
+//        } catch (NumberFormatException e) {
+//            JOptionPane.showMessageDialog(null, "Please select a record to delete first.");
+//            return;
+//        }
 
         int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you want to delete this book information?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {
             for (Book b : bookList) {
-                if (b.getBookID() == id) {
+                if (b.getTitle().equals(titleTF.getText())) {
                     bookList.remove(searchBook(b.getTitle()));
                     model.setRowCount(0);
                     break;
