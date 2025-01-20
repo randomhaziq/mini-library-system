@@ -209,6 +209,11 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         deleteBtn.setBackground(new java.awt.Color(255, 0, 0));
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         deleteBtn.setText("DELETE");
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
 
         displayAllBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         displayAllBtn.setText("DISPLAY ALL");
@@ -397,6 +402,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
         // TODO add your handling code here:
         clearField();
+        this.bookidTF.setEnabled(true);
     }//GEN-LAST:event_resetBtnActionPerformed
 
     private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
@@ -469,12 +475,12 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             if (bookidStr.isEmpty() || title.isEmpty() || author.isEmpty() || publisher.isEmpty() || category.equals("Choose Category") || genre_subject.isEmpty()) {
                 return true;
             }
-            
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Book ID must be an integer!");
             return true;
         }
-        
+
         return false;
     }
 
@@ -490,11 +496,11 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     public Book searchBook(String searchToken) {
         for (Book b : bookList) {
             if (b.getAuthor().equalsIgnoreCase(searchToken) || b.getTitle().contains(searchToken)) {
-                JOptionPane.showMessageDialog(null, "Book is found!");
+//                JOptionPane.showMessageDialog(null, "Book is found!");
                 return b;
             }
         }
-        JOptionPane.showMessageDialog(null, "No book is found with that search token!");
+//        JOptionPane.showMessageDialog(null, "No book is found with that search token!");
         return null;
     }
 
@@ -527,6 +533,10 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         //check if either field is filled before proceed to search
         if (!title.isEmpty()) {
             book = searchBook(title);
+            
+            if (book != null) {
+//                JOptionPane.showMessageDialog(null, );
+            }
             model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
 
         } else if (!author.isEmpty()) {
@@ -539,6 +549,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
         // TODO add your handling code here:
+
         if (bookList.size() == 0) {
             JOptionPane.showMessageDialog(null, "There is no book in the list to be updated.");
             return;
@@ -577,11 +588,13 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                     break;
                 }
             }
+            JOptionPane.showMessageDialog(null, "Update is successful.");
             model.setRowCount(0);
             model.addRow(new Object[]{String.valueOf(id), title, author, publisher, category, genre_subject});
         } else {
             JOptionPane.showMessageDialog(null, "No changes is made.");
         }
+        bookidTF.setEnabled(true);
     }//GEN-LAST:event_updateBtnActionPerformed
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
@@ -605,6 +618,34 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         //set the bookid cannot be update
         bookidTF.setEnabled(false);
     }//GEN-LAST:event_tableMouseClicked
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if (bookList.size() == 0) {
+            JOptionPane.showMessageDialog(null, "There is no book in the list to be deleted.");
+            return;
+
+        }
+
+        int id = Integer.parseInt(bookidTF.getText());
+
+        int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you want to delete this book information?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            for (Book b : bookList) {
+                bookList.remove(searchBook(b.getTitle()));
+                break;
+            }
+
+            JOptionPane.showMessageDialog(null, "Delete is successful.");
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
+            return;
+        }
+
+        bookidTF.setEnabled(true);
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
