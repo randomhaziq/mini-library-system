@@ -4,6 +4,10 @@
  */
 package mini_library;
 
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Asus
@@ -13,8 +17,12 @@ public class User_Record_GUI extends javax.swing.JFrame {
     /**
      * Creates new form User_Record_GUI
      */
+    ArrayList<User> userList = new ArrayList<>();
+    DefaultTableModel model;
+
     public User_Record_GUI() {
         initComponents();
+        model = (DefaultTableModel) table.getModel();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
@@ -28,6 +36,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -52,7 +61,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
         resetBtn = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        table = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -94,6 +103,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
         emailTF.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
+        buttonGroup.add(maleRB);
         maleRB.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         maleRB.setText("Male");
         maleRB.addActionListener(new java.awt.event.ActionListener() {
@@ -102,6 +112,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
             }
         });
 
+        buttonGroup.add(femaleRB);
         femaleRB.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         femaleRB.setText("Female");
 
@@ -160,19 +171,44 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
         insertBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         insertBtn.setText("INSERT");
+        insertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertBtnActionPerformed(evt);
+            }
+        });
 
         updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         updateBtn.setText("UPDATE");
+        updateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateBtnActionPerformed(evt);
+            }
+        });
 
         searchBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         searchBtn.setText("SEARCH");
+        searchBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchBtnActionPerformed(evt);
+            }
+        });
 
         deleteBtn.setBackground(new java.awt.Color(255, 0, 51));
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         deleteBtn.setText("DELETE");
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
 
         displayAllBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         displayAllBtn.setText("DISPLAY ALL");
+        displayAllBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                displayAllBtnActionPerformed(evt);
+            }
+        });
 
         resetBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         resetBtn.setText("RESET");
@@ -215,18 +251,20 @@ public class User_Record_GUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
                 "User ID", "Name", "Gender", "Phone No.", "Email"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(table);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -300,11 +338,41 @@ public class User_Record_GUI extends javax.swing.JFrame {
         nameTF.setText("");
         phoneNoTF.setText("");
         emailTF.setText("");
-        maleRB.setSelected(false);
-        femaleRB.setSelected(false);
-        
+        buttonGroup.clearSelection();
     }
-    
+
+    public boolean isUserIDExist(int userID) {
+        for (User u : userList) {
+            if (u.getUserID() == userID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isSomeFieldEmpty() {
+        String useridStr = useridTF.getText();
+        String name = nameTF.getText();
+        String phoneNo = phoneNoTF.getText();
+        String email = emailTF.getText();
+
+        if (useridStr.isEmpty() || name.isEmpty() || phoneNo.isEmpty() || email.isEmpty() || (!maleRB.isSelected() && !femaleRB.isSelected())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public User searchUser(String searchToken) {
+        for (User user : userList) {
+            if (user.getUserID() == Integer.parseInt(searchToken) || user.getName().equals(searchToken)) {
+                model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
+            }
+            return user;
+        }
+        return null;
+    }
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
@@ -315,9 +383,179 @@ public class User_Record_GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_maleRBActionPerformed
 
+    private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
+        // TODO add your handling code here:
+        try {
+            String useridStr = useridTF.getText();
+
+            int userID = Integer.parseInt(useridStr);
+            String name = nameTF.getText();
+            String phoneNo = phoneNoTF.getText();
+            String email = emailTF.getText();
+            String gender = null;
+
+            //check first if userID already existed
+            if (isUserIDExist(userID)) {
+                JOptionPane.showMessageDialog(null, "There is an existing user with that User ID!");
+                return;
+            }
+
+            //check if all field is filled before creating the object
+            if (isSomeFieldEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please enter all details!");
+                return;
+            }
+
+            if (maleRB.isSelected()) {
+                gender = "Male";
+            } else if (femaleRB.isSelected()) {
+                gender = "Female";
+            }
+
+            User newUser = new User(userID, name, gender, phoneNo, email);
+            userList.add(newUser);
+
+            model.insertRow(model.getRowCount(), new Object[]{userID, name, gender, phoneNo, email});
+            JOptionPane.showMessageDialog(null, "User is added!");
+            clearAllField();
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter an integer value for User ID!");
+            clearAllField();
+        }
+    }//GEN-LAST:event_insertBtnActionPerformed
+
     private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
         // TODO add your handling code here:
+        clearAllField();
     }//GEN-LAST:event_resetBtnActionPerformed
+
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+        // TODO add your handling code here:
+        model.setRowCount(0);
+        String useridStr = useridTF.getText();
+        String name = nameTF.getText();
+
+        if (useridStr.isEmpty() && name.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter the User ID or name to be searched!");
+            return;
+        }
+
+        if (searchUser(useridStr) != null || searchUser(name) != null) {
+            JOptionPane.showMessageDialog(null, "User is found!");
+        } else {
+            JOptionPane.showMessageDialog(null, "User is not found!");
+        }
+    }//GEN-LAST:event_searchBtnActionPerformed
+
+    private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
+        // TODO add your handling code here:
+        model.setRowCount(0);
+
+        for (User user : userList) {
+            model.insertRow(model.getRowCount(), new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
+        }
+    }//GEN-LAST:event_displayAllBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        // TODO add your handling code here:
+        if (userList.size() == 0) {
+            JOptionPane.showMessageDialog(null, "There is no book in the list to be updated.");
+            return;
+        }
+
+        if (isSomeFieldEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please select a row to be updated first!");
+            return;
+        }
+
+        int id = Integer.parseInt(useridTF.getText());
+
+        if (!isUserIDExist(id)) {
+            JOptionPane.showMessageDialog(null, "There is no such user is found with this User ID: " + id);
+            return;
+        }
+
+        String name = nameTF.getText();
+        String phoneNo = phoneNoTF.getText();
+        String email = emailTF.getText();
+
+        int choice = JOptionPane.showConfirmDialog(null, "You are editing this user information. \nDo you want to apply these changes?", "Update User Information", JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            for (User user : userList) {
+                if (user.getUserID() == id) {
+                    user.setName(name);
+                    user.setPhoneNumber(phoneNo);
+                    user.setEmail(email);
+
+                    if (maleRB.isSelected()) {
+                        user.setGender("Male");
+                    } else {
+                        user.setGender("Female");
+                    }
+                    break;
+                }
+            }
+            JOptionPane.showMessageDialog(null, "Update is successful.");
+
+        } else {
+            JOptionPane.showMessageDialog(null, "No changes is made.");
+        }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if (userList.size() == 0) {
+            JOptionPane.showMessageDialog(null, "There is no user in the list to be deleted.");
+            return;
+
+        }
+
+        int choice = JOptionPane.showConfirmDialog(null, "You are deleting this user information! \nThis changes is permanent.\nDo you really want to delete this?", "Delete User Information", JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            for (User user : userList) {
+                if (String.valueOf(user.getUserID()).equals(useridTF.getText())) {
+                    userList.remove(searchUser(useridTF.getText()));
+                    model.setRowCount(0);
+                    break;
+
+                }
+            }
+
+            JOptionPane.showMessageDialog(null, "Delete is successful.");
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
+            return;
+        }
+
+        displayAllBtnActionPerformed(evt);
+        clearAllField();
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
+        // TODO add your handling code here:
+        //get selected row value from table
+        String useridToTF = table.getValueAt(table.getSelectedRow(), 0).toString();
+        String nameToTF = table.getValueAt(table.getSelectedRow(), 1).toString();
+        String genderToTF = table.getValueAt(table.getSelectedRow(), 2).toString();
+        String phoneNoToTF = table.getValueAt(table.getSelectedRow(), 3).toString();
+        String emailToTF = table.getValueAt(table.getSelectedRow(), 4).toString();
+
+        //set the value selected from table into textField
+        useridTF.setText(useridToTF);
+        nameTF.setText(nameToTF);
+        phoneNoTF.setText(phoneNoToTF);
+        emailTF.setText(emailToTF);
+
+        if (genderToTF.equalsIgnoreCase("Male")) {
+            maleRB.setSelected(true);
+        } else {
+            femaleRB.setSelected(true);
+        }
+    }//GEN-LAST:event_tableMouseClicked
 
     /**
      * @param args the command line arguments
@@ -355,6 +593,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton displayAllBtn;
     private javax.swing.JTextField emailTF;
@@ -372,13 +611,14 @@ public class User_Record_GUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable2;
     private javax.swing.JRadioButton maleRB;
     private javax.swing.JTextField nameTF;
     private javax.swing.JTextField phoneNoTF;
     private javax.swing.JButton resetBtn;
     private javax.swing.JButton searchBtn;
+    private javax.swing.JTable table;
     private javax.swing.JButton updateBtn;
     private javax.swing.JTextField useridTF;
     // End of variables declaration//GEN-END:variables
+
 }

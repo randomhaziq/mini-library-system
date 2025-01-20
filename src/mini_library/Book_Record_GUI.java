@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Asus
  */
+
 public class Book_Record_GUI extends javax.swing.JFrame {
 
     /**
@@ -402,7 +403,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
         // TODO add your handling code here:
         clearField();
-        this.bookidTF.setEnabled(true);
     }//GEN-LAST:event_resetBtnActionPerformed
 
     private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
@@ -442,7 +442,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 return;
             }
 
-            model.addRow(new Object[]{bookID, title, author, publisher, category, genre_subject});
+            model.insertRow(model.getRowCount(), new Object[]{bookID, title, author, publisher, category, genre_subject});
             JOptionPane.showMessageDialog(null, "Book is added!");
             clearField();
 
@@ -495,8 +495,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     public Book searchBook(String searchToken) {
         for (Book book : bookList) {
             if (book.getAuthor().equalsIgnoreCase(searchToken) || book.getTitle().contains(searchToken)) {
-//                JOptionPane.showMessageDialog(null, "Book is found!");
-
                 if (book instanceof Fiction_Book) {
                     model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
 
@@ -507,7 +505,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 return book;
             }
         }
-//        JOptionPane.showMessageDialog(null, "Book is not found.");
         return null;
     }
 
@@ -528,7 +525,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         model.setRowCount(0); //reset all existing value in table
 
-        Book book = null;
         String title = titleTF.getText();
         String author = authorTF.getText();
 
@@ -538,20 +534,11 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         }
 
         //check if either field is filled before proceed to search
-        if (!title.isEmpty()) {
-            if (searchBook(title) != null) {
-                JOptionPane.showMessageDialog(null, "Book is found.");
-            } else {
-                JOptionPane.showMessageDialog(null, "Book is not found.");
-            }
+        if (searchBook(title) != null || searchBook(author) != null) {
+            JOptionPane.showMessageDialog(null, "Book is found.");
 
-        } else if (!author.isEmpty()) {
-            if (searchBook(author) != null) {
-                JOptionPane.showMessageDialog(null, "Book is found.");
-            } else {
-                JOptionPane.showMessageDialog(null, "Book is not found.");
-            }
-            
+        } else {
+            JOptionPane.showMessageDialog(null, "Book is not found.");
         }
 
     }//GEN-LAST:event_searchBtnActionPerformed
@@ -575,7 +562,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "There is no such book is found with this Book ID: " + id);
             return;
         }
-        
+
         String title = titleTF.getText();
         String author = authorTF.getText();
         String publisher = publisherTF.getText();
@@ -584,7 +571,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         int choice = JOptionPane.showConfirmDialog(null, "You are editing this book information. \nDo you want to apply these changes?", "Update Book Information", JOptionPane.YES_NO_OPTION);
 
-        
         if (choice == JOptionPane.YES_OPTION) {
             for (Book b : bookList) {
                 if (b.getBookID() == id) {
@@ -614,7 +600,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "No changes is made.");
         }
-        bookidTF.setEnabled(true);
     }//GEN-LAST:event_updateBtnActionPerformed
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
@@ -634,9 +619,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         publisherTF.setText(publisherToTF);
         categoryCB.setSelectedItem(categoryToTF);
         genreTF.setText(genreToTF);
-
-        //set the bookid cannot be update
-        bookidTF.setEnabled(false);
     }//GEN-LAST:event_tableMouseClicked
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
@@ -646,17 +628,8 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             return;
 
         }
-//        int id = -1;
-//
-//        try {
-//            id = Integer.parseInt(bookidTF.getText());
-//
-//        } catch (NumberFormatException e) {
-//            JOptionPane.showMessageDialog(null, "Please select a record to delete first.");
-//            return;
-//        }
 
-        int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you want to delete this book information?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
+        int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you really want to delete this?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {
             for (Book b : bookList) {
@@ -677,43 +650,42 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         displayAllBtnActionPerformed(evt);
         clearField();
-        bookidTF.setEnabled(true);
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Book_Record_GUI().setVisible(true);
-            }
-        });
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
+    //</editor-fold>
+
+    /* Create and display the form */
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            new Book_Record_GUI().setVisible(true);
+        }
+    });
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField authorTF;
