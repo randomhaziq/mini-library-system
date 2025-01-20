@@ -15,6 +15,8 @@ public class User_Record_GUI extends javax.swing.JFrame {
      */
     public User_Record_GUI() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     /**
@@ -290,6 +292,8 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        this.dispose();
+        new Admin_Portal_GUI().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void maleRBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maleRBActionPerformed

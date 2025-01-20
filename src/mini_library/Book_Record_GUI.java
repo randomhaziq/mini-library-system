@@ -4,6 +4,10 @@
  */
 package mini_library;
 
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Asus
@@ -13,8 +17,15 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     /**
      * Creates new form Book_Record_GUI
      */
+    ArrayList<Book> bookList = new ArrayList<>();
+    DefaultTableModel model;
+
     public Book_Record_GUI() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        model = (DefaultTableModel) table.getModel();
+
     }
 
     /**
@@ -40,7 +51,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         authorTF = new javax.swing.JTextField();
         publisherTF = new javax.swing.JTextField();
         genreTF = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        categoryCB = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         insertBtn = new javax.swing.JButton();
         updateBtn = new javax.swing.JButton();
@@ -50,7 +61,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         resetBtn = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        table = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -102,8 +113,13 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         genreTF.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
-        jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choose Category", "Fiction", "Non-fiction" }));
+        categoryCB.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        categoryCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choose Category", "Fiction", "Non-fiction" }));
+        categoryCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                categoryCBActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -126,7 +142,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                             .addComponent(authorTF)
                             .addComponent(publisherTF)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(categoryCB, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(genreLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -156,7 +172,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(categoryCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(genreLabel)
@@ -168,12 +184,27 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         insertBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         insertBtn.setText("INSERT");
+        insertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertBtnActionPerformed(evt);
+            }
+        });
 
         updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         updateBtn.setText("UPDATE");
+        updateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateBtnActionPerformed(evt);
+            }
+        });
 
         searchBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         searchBtn.setText("SEARCH");
+        searchBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchBtnActionPerformed(evt);
+            }
+        });
 
         deleteBtn.setBackground(new java.awt.Color(255, 0, 0));
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -189,6 +220,11 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         resetBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         resetBtn.setText("RESET");
+        resetBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -223,18 +259,20 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
                 "Book ID", "Title", "Author", "Publisher", "Category", "Genre"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(table);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -255,6 +293,11 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton1.setText("BACK");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -279,15 +322,15 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(22, 22, 22)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1)
                     .addComponent(jLabel1))
-                .addGap(53, 53, 53)
+                .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 372, Short.MAX_VALUE))
                 .addContainerGap(89, Short.MAX_VALUE))
         );
 
@@ -317,7 +360,251 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
     private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
         // TODO add your handling code here:
+        model.setRowCount(0);
+        for (Book b : bookList) {
+            if (b.getCategory().equalsIgnoreCase("Fiction")) {
+                Fiction_Book fictionBook = (Fiction_Book) b;  // Cast the book to Fiction_Book so we can use the child method - getGenre()
+
+                model.insertRow(model.getRowCount(), new Object[]{
+                    b.getBookID(),
+                    b.getTitle(),
+                    b.getAuthor(),
+                    b.getPublisher(),
+                    b.getCategory(),
+                    fictionBook.getGenre()
+                });
+            } else if (b.getCategory().equalsIgnoreCase("Non-fiction")) {
+                Non_Fiction_Book fictionBook = (Non_Fiction_Book) b;  // Cast the book to Non_Fiction_Book so we can use the child method - getSubject()
+
+                model.insertRow(model.getRowCount(), new Object[]{
+                    b.getBookID(),
+                    b.getTitle(),
+                    b.getAuthor(),
+                    b.getPublisher(),
+                    b.getCategory(),
+                    fictionBook.getSubject()
+                });
+            }
+        }
     }//GEN-LAST:event_displayAllBtnActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new Admin_Portal_GUI().setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
+        // TODO add your handling code here:
+        clearField();
+    }//GEN-LAST:event_resetBtnActionPerformed
+
+    private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
+        // TODO add your handling code here:
+        try {
+            String bookidStr = bookidTF.getText();
+
+            int bookID = Integer.parseInt(bookidStr);
+            String title = titleTF.getText();
+            String author = authorTF.getText();
+            String publisher = publisherTF.getText();
+            String category = (String) categoryCB.getSelectedItem();
+            String genre_subject = genreTF.getText();
+
+            //check first if bookID already existed
+            if (isBookIDExist(bookID)) {
+                JOptionPane.showMessageDialog(null, "There is an existing book with that Book ID!");
+                return;
+            }
+
+            //check if all field is filled before creating the object
+            if (isSomeFieldEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please enter all details!");
+                return;
+            }
+
+            if (category.equalsIgnoreCase("Fiction")) {
+                Fiction_Book fictionBook = new Fiction_Book(bookID, title, author, publisher, category, genre_subject);
+                bookList.add(fictionBook);
+
+            } else if (category.equalsIgnoreCase("Non-fiction")) {
+                Non_Fiction_Book nonFictionBook = new Non_Fiction_Book(bookID, title, author, publisher, category, genre_subject);
+                bookList.add(nonFictionBook);
+
+            } else {
+                JOptionPane.showMessageDialog(null, "System error!");
+                return;
+            }
+
+            model.addRow(new Object[]{bookID, title, author, publisher, category, genre_subject});
+            JOptionPane.showMessageDialog(null, "Book is added!");
+            clearField();
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter an integer value for Book ID!");
+            clearField();
+        }
+    }//GEN-LAST:event_insertBtnActionPerformed
+
+    private void clearField() {
+        bookidTF.setText("");
+        titleTF.setText("");
+        authorTF.setText("");
+        publisherTF.setText("");
+        categoryCB.setSelectedIndex(0);
+        genreTF.setText("");
+    }
+
+    public boolean isSomeFieldEmpty() {
+        try {
+            String bookidStr = bookidTF.getText();
+
+            int bookID = Integer.parseInt(bookidStr);
+            String title = titleTF.getText();
+            String author = authorTF.getText();
+            String publisher = publisherTF.getText();
+            String category = (String) categoryCB.getSelectedItem();
+            String genre_subject = genreTF.getText();
+
+            if (bookidStr.isEmpty() || title.isEmpty() || author.isEmpty() || publisher.isEmpty() || category.equals("Choose Category") || genre_subject.isEmpty()) {
+                return true;
+            }
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Book ID must be an integer!");
+            return true;
+        }
+        
+        return false;
+    }
+
+    public boolean isBookIDExist(int bookId) {
+        for (Book b : bookList) {
+            if (b.getBookID() == bookId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Book searchBook(String searchToken) {
+        for (Book b : bookList) {
+            if (b.getAuthor().equalsIgnoreCase(searchToken) || b.getTitle().contains(searchToken)) {
+                JOptionPane.showMessageDialog(null, "Book is found!");
+                return b;
+            }
+        }
+        JOptionPane.showMessageDialog(null, "No book is found with that search token!");
+        return null;
+    }
+
+    private void categoryCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryCBActionPerformed
+        // TODO add your handling code here:
+        String category = (String) categoryCB.getSelectedItem();
+
+        if (category.equals("Fiction")) {
+            this.genreLabel.setText("Genre");
+
+        } else if (category.equals("Non-fiction")) {
+            this.genreLabel.setText("Subject");
+
+        }
+    }//GEN-LAST:event_categoryCBActionPerformed
+
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+        // TODO add your handling code here:
+        model.setRowCount(0); //reset all existing value in table
+
+        Book book = null;
+        String title = titleTF.getText();
+        String author = authorTF.getText();
+
+        if (title.isEmpty() && author.isEmpty()) {
+            JOptionPane.showMessageDialog(searchBtn, "Enter the name of author or keyword of the title to be searched.");
+            return;
+        }
+
+        //check if either field is filled before proceed to search
+        if (!title.isEmpty()) {
+            book = searchBook(title);
+            model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
+
+        } else if (!author.isEmpty()) {
+            book = searchBook(author);
+            model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Non_Fiction_Book) book).getSubject()});
+
+        }
+
+    }//GEN-LAST:event_searchBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        // TODO add your handling code here:
+        if (bookList.size() == 0) {
+            JOptionPane.showMessageDialog(null, "There is no book in the list to be updated.");
+            return;
+
+        }
+        if (isSomeFieldEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please make sure all field is entered!");
+            return;
+        }
+
+        String title = titleTF.getText();
+        String author = authorTF.getText();
+        String publisher = publisherTF.getText();
+        String category = (String) categoryCB.getSelectedItem();
+        String genre_subject = genreTF.getText();
+
+        int choice = JOptionPane.showConfirmDialog(null, "You are editing this book information. \nDo you want to apply these changes?", "Update Book Information", JOptionPane.YES_NO_OPTION);
+
+        int id = Integer.parseInt(bookidTF.getText());
+
+        if (choice == JOptionPane.YES_OPTION) {
+            for (Book b : bookList) {
+                if (b.getBookID() == id) {
+                    b.setTitle(title);
+                    b.setAuthor(author);
+                    b.setPublisher(publisher);
+                    b.setCategory(category);
+
+                    if (b instanceof Fiction_Book && b.getCategory().equalsIgnoreCase("Fiction")) {
+                        ((Fiction_Book) b).setGenre(genre_subject);
+
+                    } else if (b instanceof Non_Fiction_Book && b.getCategory().equalsIgnoreCase("Non-fiction")) {
+                        ((Non_Fiction_Book) b).setSubject(genre_subject);
+
+                    }
+                    break;
+                }
+            }
+            model.setRowCount(0);
+            model.addRow(new Object[]{String.valueOf(id), title, author, publisher, category, genre_subject});
+        } else {
+            JOptionPane.showMessageDialog(null, "No changes is made.");
+        }
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
+        // TODO add your handling code here:
+        //get selected row value from table
+        String bookidToTF = table.getValueAt(table.getSelectedRow(), 0).toString();
+        String titleToTF = table.getValueAt(table.getSelectedRow(), 1).toString();
+        String authorToTF = table.getValueAt(table.getSelectedRow(), 2).toString();
+        String publisherToTF = table.getValueAt(table.getSelectedRow(), 3).toString();
+        String categoryToTF = table.getValueAt(table.getSelectedRow(), 4).toString();
+        String genreToTF = table.getValueAt(table.getSelectedRow(), 5).toString();
+
+        //set the value selected from table into textField
+        bookidTF.setText(bookidToTF);
+        titleTF.setText(titleToTF);
+        authorTF.setText(authorToTF);
+        publisherTF.setText(publisherToTF);
+        categoryCB.setSelectedItem(categoryToTF);
+        genreTF.setText(genreToTF);
+
+        //set the bookid cannot be update
+        bookidTF.setEnabled(false);
+    }//GEN-LAST:event_tableMouseClicked
 
     /**
      * @param args the command line arguments
@@ -357,13 +644,13 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField authorTF;
     private javax.swing.JTextField bookidTF;
+    private javax.swing.JComboBox<String> categoryCB;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton displayAllBtn;
     private javax.swing.JLabel genreLabel;
     private javax.swing.JTextField genreTF;
     private javax.swing.JButton insertBtn;
     private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -375,10 +662,10 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField publisherTF;
     private javax.swing.JButton resetBtn;
     private javax.swing.JButton searchBtn;
+    private javax.swing.JTable table;
     private javax.swing.JTextField titleTF;
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables

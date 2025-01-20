@@ -4,6 +4,8 @@
  */
 package mini_library;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Asus
@@ -15,6 +17,8 @@ public class Login_GUI extends javax.swing.JFrame {
      */
     public Login_GUI() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     /**
@@ -28,7 +32,6 @@ public class Login_GUI extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        backBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -44,9 +47,6 @@ public class Login_GUI extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel1.setText("LOGIN");
 
-        backBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        backBtn.setText("BACK");
-
         jPanel2.setBackground(new java.awt.Color(0, 0, 153));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -59,9 +59,19 @@ public class Login_GUI extends javax.swing.JFrame {
 
         resetBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         resetBtn.setText("RESET");
+        resetBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetBtnActionPerformed(evt);
+            }
+        });
 
         loginBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         loginBtn.setText("LOGIN");
+        loginBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loginBtnActionPerformed(evt);
+            }
+        });
 
         passwordTF.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
@@ -108,11 +118,8 @@ public class Login_GUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(backBtn))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
@@ -120,9 +127,7 @@ public class Login_GUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(backBtn))
+                .addComponent(jLabel1)
                 .addGap(30, 30, 30)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(75, Short.MAX_VALUE))
@@ -145,6 +150,38 @@ public class Login_GUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
+        // TODO add your handling code here:
+        String username = usernameTF.getText();
+        char[] passwordArr = passwordTF.getPassword();
+        String password = new String(passwordArr);
+
+        //check if all field is filled before can login
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter all details!");
+            return;
+        }
+
+        //initialize username and password of admin
+        String adminUsername = "Admin123";
+        String adminPassword = "1234";
+
+        if (!username.equals(adminUsername) && !password.equals(adminPassword)) {
+            JOptionPane.showMessageDialog(null, "Incorrect username and/or password!");
+            return;
+        } else {
+            JOptionPane.showMessageDialog(null, "Login successful...");
+            this.dispose();
+            new Admin_Portal_GUI().setVisible(true);
+        }
+    }//GEN-LAST:event_loginBtnActionPerformed
+
+    private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
+        // TODO add your handling code here:
+        usernameTF.setText("");
+        passwordTF.setText("");
+    }//GEN-LAST:event_resetBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -182,7 +219,6 @@ public class Login_GUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton backBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

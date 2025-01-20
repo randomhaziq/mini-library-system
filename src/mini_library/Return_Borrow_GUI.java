@@ -15,6 +15,8 @@ public class Return_Borrow_GUI extends javax.swing.JFrame {
      */
     public Return_Borrow_GUI() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     /**
@@ -393,6 +395,11 @@ public class Return_Borrow_GUI extends javax.swing.JFrame {
 
         backBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         backBtn.setText("BACK");
+        backBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backBtnActionPerformed(evt);
+            }
+        });
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton2.setText("CONFIRM");
@@ -500,6 +507,12 @@ public class Return_Borrow_GUI extends javax.swing.JFrame {
     private void availabilityTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_availabilityTFActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_availabilityTFActionPerformed
+
+    private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new Admin_Portal_GUI().setVisible(true);
+    }//GEN-LAST:event_backBtnActionPerformed
 
     /**
      * @param args the command line arguments

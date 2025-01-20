@@ -15,6 +15,8 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
      */
     public Admin_Portal_GUI() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     /**
@@ -92,6 +94,11 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
 
         logoutBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         logoutBtn.setText("LOGOUT");
+        logoutBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutBtnActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("jLabel8");
 
@@ -116,6 +123,11 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
 
         operationBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         operationBtn.setText("RETURN/ BORROW");
+        operationBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                operationBtnActionPerformed(evt);
+            }
+        });
 
         jLabel7.setText("jLabel7");
 
@@ -140,6 +152,11 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
 
         bookRecordBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         bookRecordBtn.setText("BOOK RECORD");
+        bookRecordBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bookRecordBtnActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("imageBook");
 
@@ -164,6 +181,11 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
 
         userRecordBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         userRecordBtn.setText("USER RECORD");
+        userRecordBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                userRecordBtnActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("jLabel6");
 
@@ -246,6 +268,30 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new Login_GUI().setVisible(true);
+    }//GEN-LAST:event_logoutBtnActionPerformed
+
+    private void bookRecordBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bookRecordBtnActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new Book_Record_GUI().setVisible(true);
+    }//GEN-LAST:event_bookRecordBtnActionPerformed
+
+    private void userRecordBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userRecordBtnActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new User_Record_GUI().setVisible(true);
+    }//GEN-LAST:event_userRecordBtnActionPerformed
+
+    private void operationBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_operationBtnActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new Return_Borrow_GUI().setVisible(true);
+    }//GEN-LAST:event_operationBtnActionPerformed
 
     /**
      * @param args the command line arguments
