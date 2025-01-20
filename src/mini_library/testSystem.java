@@ -19,6 +19,7 @@ import java.util.Scanner;
 public class testSystem {
 
     public static void main(String[] args) throws IOException {
+        System.out.println(System.getProperty("java.version"));
         File file = new File("C:\\Users\\Asus\\Documents\\NetBeansProjects\\Mini_Library\\testSystemFile.txt");
         FileWriter fw = new FileWriter(file);
         PrintWriter writer = new PrintWriter(fw);

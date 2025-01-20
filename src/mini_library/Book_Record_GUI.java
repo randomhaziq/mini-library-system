@@ -477,7 +477,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             }
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Book ID must be an integer!");
             return true;
         }
 
@@ -494,13 +493,21 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     }
 
     public Book searchBook(String searchToken) {
-        for (Book b : bookList) {
-            if (b.getAuthor().equalsIgnoreCase(searchToken) || b.getTitle().contains(searchToken)) {
-//                JOptionPane.showMessageDialog(null, "Book is found!");
-                return b;
+        for (Book book : bookList) {
+            if (book.getAuthor().equalsIgnoreCase(searchToken) || book.getTitle().contains(searchToken)) {
+                JOptionPane.showMessageDialog(null, "Book is found!");
+
+                if (book instanceof Fiction_Book) {
+                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
+
+                } else if (book instanceof Non_Fiction_Book) {
+                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Non_Fiction_Book) book).getSubject()});
+
+                }
+                break;
             }
         }
-//        JOptionPane.showMessageDialog(null, "No book is found with that search token!");
+        JOptionPane.showMessageDialog(null, "Book is not found.");
         return null;
     }
 
@@ -532,17 +539,10 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         //check if either field is filled before proceed to search
         if (!title.isEmpty()) {
-            book = searchBook(title);
-            
-            if (book != null) {
-//                JOptionPane.showMessageDialog(null, );
-            }
-            model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
+            searchBook(title);
 
         } else if (!author.isEmpty()) {
-            book = searchBook(author);
-            model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Non_Fiction_Book) book).getSubject()});
-
+            searchBook(author);
         }
 
     }//GEN-LAST:event_searchBtnActionPerformed
@@ -556,7 +556,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         }
         if (isSomeFieldEmpty()) {
-            JOptionPane.showMessageDialog(null, "Please make sure all field is entered!");
+            JOptionPane.showMessageDialog(null, "Please select a row to be updated first!");
             return;
         }
 
@@ -573,24 +573,30 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         if (choice == JOptionPane.YES_OPTION) {
             for (Book b : bookList) {
                 if (b.getBookID() == id) {
+                    model.setRowCount(0);
                     b.setTitle(title);
                     b.setAuthor(author);
                     b.setPublisher(publisher);
                     b.setCategory(category);
 
                     if (b instanceof Fiction_Book && b.getCategory().equalsIgnoreCase("Fiction")) {
-                        ((Fiction_Book) b).setGenre(genre_subject);
+                        Fiction_Book fictionBook = (Fiction_Book) b;
+                        fictionBook.setGenre(genre_subject);
+
+                        model.addRow(new Object[]{b.getBookID(), b.getTitle(), b.getAuthor(), b.getPublisher(), b.getCategory(), fictionBook.getGenre()});
 
                     } else if (b instanceof Non_Fiction_Book && b.getCategory().equalsIgnoreCase("Non-fiction")) {
                         ((Non_Fiction_Book) b).setSubject(genre_subject);
+                        Non_Fiction_Book nonFictionBook = (Non_Fiction_Book) b;
 
+                        model.addRow(new Object[]{b.getBookID(), b.getTitle(), b.getAuthor(), b.getPublisher(), b.getCategory(), nonFictionBook.getSubject()});
                     }
                     break;
                 }
             }
             JOptionPane.showMessageDialog(null, "Update is successful.");
-            model.setRowCount(0);
-            model.addRow(new Object[]{String.valueOf(id), title, author, publisher, category, genre_subject});
+//            model.setRowCount(0);
+//            model.addRow(new Object[]{String.valueOf(id), title, author, publisher, category, genre_subject});
         } else {
             JOptionPane.showMessageDialog(null, "No changes is made.");
         }
@@ -626,15 +632,26 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             return;
 
         }
+        int id = -1;
 
-        int id = Integer.parseInt(bookidTF.getText());
+        try {
+            id = Integer.parseInt(bookidTF.getText());
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please select a record to delete first.");
+            return;
+        }
 
         int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you want to delete this book information?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {
             for (Book b : bookList) {
-                bookList.remove(searchBook(b.getTitle()));
-                break;
+                if (b.getBookID() == id) {
+                    bookList.remove(searchBook(b.getTitle()));
+                    model.setRowCount(0);
+                    break;
+
+                }
             }
 
             JOptionPane.showMessageDialog(null, "Delete is successful.");
@@ -644,6 +661,8 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             return;
         }
 
+        displayAllBtnActionPerformed(evt);
+        clearField();
         bookidTF.setEnabled(true);
     }//GEN-LAST:event_deleteBtnActionPerformed
 
