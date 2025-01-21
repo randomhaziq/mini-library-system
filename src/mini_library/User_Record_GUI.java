@@ -363,12 +363,21 @@ public class User_Record_GUI extends javax.swing.JFrame {
         return false;
     }
 
-    public User searchUser(String searchToken) {
+//    public User searchUser(String searchToken) {
+//        for (User user : userList) {
+//            if (user.getUserID() == Integer.parseInt(searchToken) || user.getName().equals(searchToken)) {
+//                model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
+//            }
+//            return user;
+//        }
+//        return null;
+//    }
+    public User searchBy(Tester t) {
         for (User user : userList) {
-            if (user.getUserID() == Integer.parseInt(searchToken) || user.getName().equals(searchToken)) {
+            if (t.test(user)) {
                 model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
+                return user;
             }
-            return user;
         }
         return null;
     }
@@ -432,20 +441,51 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
         // TODO add your handling code here:
-        model.setRowCount(0);
-        String useridStr = useridTF.getText();
-        String name = nameTF.getText();
-
-        if (useridStr.isEmpty() && name.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Please enter the User ID or name to be searched!");
+        if (userList.size() == 0) {
+            JOptionPane.showMessageDialog(null, "There is no user in the list to be searched.");
             return;
         }
 
-        if (searchUser(useridStr) != null || searchUser(name) != null) {
-            JOptionPane.showMessageDialog(null, "User is found!");
-        } else {
-            JOptionPane.showMessageDialog(null, "User is not found!");
+        int choice = JOptionPane.showConfirmDialog(null, "Click 'Yes' to search based on User ID and Click 'No' to search based on name!", "Search for User", JOptionPane.YES_NO_OPTION);
+        model.setRowCount(0);
+
+        try {
+            if (choice == JOptionPane.YES_OPTION) {
+                String id = JOptionPane.showInputDialog(null, "Enter User ID to be searched.").trim();
+                Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id);
+                
+                if (searchBy(testID) != null) {
+                    JOptionPane.showMessageDialog(null, "User is found.");
+                    
+                } else {
+                    JOptionPane.showMessageDialog(null, "User is not found.");
+                    
+                }
+
+            } else {
+                String name = JOptionPane.showInputDialog(null, "Enter name to be searched.").trim();
+                Tester<User> testName = user -> user.getName().equalsIgnoreCase(name);
+                searchBy(testName);
+
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Make sure you entered the correct input.");
+            return;
         }
+
+//        String useridStr = useridTF.getText();
+//        String name = nameTF.getText();
+//
+//        if (useridStr.isEmpty() && name.isEmpty()) {
+//            JOptionPane.showMessageDialog(null, "Please enter the User ID or name to be searched!");
+//            return;
+//        }
+//
+//        if (searchUser(useridStr) != null || searchUser(name) != null) {
+//            JOptionPane.showMessageDialog(null, "User is found!");
+//        } else {
+//            JOptionPane.showMessageDialog(null, "User is not found!");
+//        }
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
@@ -460,7 +500,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
         // TODO add your handling code here:
         if (userList.size() == 0) {
-            JOptionPane.showMessageDialog(null, "There is no book in the list to be updated.");
+            JOptionPane.showMessageDialog(null, "There is no user in the list to be updated.");
             return;
         }
 
@@ -506,31 +546,34 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
+        String id = useridTF.getText();
+        String name = nameTF.getText();
+        User searchedUser = null;
+
         if (userList.size() == 0) {
             JOptionPane.showMessageDialog(null, "There is no user in the list to be deleted.");
             return;
-
         }
 
         int choice = JOptionPane.showConfirmDialog(null, "You are deleting this user information! \nThis changes is permanent.\nDo you really want to delete this?", "Delete User Information", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {
-            for (User user : userList) {
-                if (String.valueOf(user.getUserID()).equals(useridTF.getText())) {
-                    userList.remove(searchUser(useridTF.getText()));
-                    model.setRowCount(0);
-                    break;
 
-                }
+            if (!id.isEmpty()) {
+                Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id);
+                searchedUser = searchBy(testID);
+            } else {
+                Tester<User> testName = user -> user.getName().equalsIgnoreCase(name);
+                searchedUser = searchBy(testName);
             }
 
+            model.setRowCount(0);
+            userList.remove(searchedUser);
             JOptionPane.showMessageDialog(null, "Delete is successful.");
 
         } else {
             JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
-            return;
         }
-
         displayAllBtnActionPerformed(evt);
         clearAllField();
     }//GEN-LAST:event_deleteBtnActionPerformed

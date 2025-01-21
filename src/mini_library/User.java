@@ -72,3 +72,7 @@ public class User {
     }
     
 }
+
+interface Tester <T> {
+    boolean test(T str);
+}
