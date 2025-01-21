@@ -451,22 +451,28 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
         try {
             if (choice == JOptionPane.YES_OPTION) {
-                String id = JOptionPane.showInputDialog(null, "Enter User ID to be searched.").trim();
-                Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id);
-                
-                if (searchBy(testID) != null) {
-                    JOptionPane.showMessageDialog(null, "User is found.");
-                    
-                } else {
-                    JOptionPane.showMessageDialog(null, "User is not found.");
-                    
+                String id = JOptionPane.showInputDialog(null, "Enter User ID to be searched.");
+
+                if (id != null) {
+
+                    Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id.trim());
+
+                    if (searchBy(testID) != null) {
+                        JOptionPane.showMessageDialog(null, "User is found.");
+
+                    } else {
+                        JOptionPane.showMessageDialog(null, "User is not found.");
+
+                    }
                 }
 
             } else {
-                String name = JOptionPane.showInputDialog(null, "Enter name to be searched.").trim();
-                Tester<User> testName = user -> user.getName().equalsIgnoreCase(name);
-                searchBy(testName);
+                String name = JOptionPane.showInputDialog(null, "Enter name to be searched.");
+                if (name != null) {
+                    Tester<User> testName = user -> user.getName().equalsIgnoreCase(name.trim());
+                    searchBy(testName);
 
+                }
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Make sure you entered the correct input.");
@@ -534,6 +540,8 @@ public class User_Record_GUI extends javax.swing.JFrame {
                     } else {
                         user.setGender("Female");
                     }
+                    model.setRowCount(0);
+                    model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
                     break;
                 }
             }
@@ -552,6 +560,11 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
         if (userList.size() == 0) {
             JOptionPane.showMessageDialog(null, "There is no user in the list to be deleted.");
+            return;
+        }
+
+        if (isSomeFieldEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please select a row to be deleted first!");
             return;
         }
 
