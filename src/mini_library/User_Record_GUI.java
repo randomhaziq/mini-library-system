@@ -454,7 +454,6 @@ public class User_Record_GUI extends javax.swing.JFrame {
                 String id = JOptionPane.showInputDialog(null, "Enter User ID to be searched.");
 
                 if (id != null) {
-
                     Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id.trim());
 
                     if (searchBy(testID) != null) {
@@ -468,9 +467,17 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
             } else {
                 String name = JOptionPane.showInputDialog(null, "Enter name to be searched.");
+                
                 if (name != null) {
                     Tester<User> testName = user -> user.getName().equalsIgnoreCase(name.trim());
-                    searchBy(testName);
+                    
+                    if (searchBy(testName) != null) {
+                        JOptionPane.showMessageDialog(null, "User is found.");
+
+                    } else {
+                        JOptionPane.showMessageDialog(null, "User is not found.");
+
+                    }
 
                 }
             }
