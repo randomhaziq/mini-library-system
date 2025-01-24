@@ -26,6 +26,10 @@ public class User {
         this.email = email;
     }
 
+    public ArrayList<Book> getBorrowedBookList() {
+        return borrowedBookList;
+    }
+
     public int getUserID() {
         return userID;
     }

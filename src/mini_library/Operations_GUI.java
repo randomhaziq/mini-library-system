@@ -4,6 +4,11 @@
  */
 package mini_library;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Asus
@@ -13,8 +18,12 @@ public class Operations_GUI extends javax.swing.JFrame {
     /**
      * Creates new form testReturn
      */
+    
     public Operations_GUI() {
         initComponents();
+         String url = "jdbc:mysql://localhost:3306/your_database_name";
+        String username = "your_username";
+        String password = "your_password";
     }
 
     /**
@@ -30,8 +39,8 @@ public class Operations_GUI extends javax.swing.JFrame {
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
+        tabbedPane = new javax.swing.JTabbedPane();
+        borrowPanel = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -57,7 +66,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
-        jPanel3 = new javax.swing.JPanel();
+        returnPanel = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
@@ -84,6 +93,8 @@ public class Operations_GUI extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         table2 = new javax.swing.JTable();
         backBtn = new javax.swing.JButton();
+        insertBtn = new javax.swing.JButton();
+        refreshBtn = new javax.swing.JButton();
 
         jLabel12.setText("jLabel12");
 
@@ -105,6 +116,16 @@ public class Operations_GUI extends javax.swing.JFrame {
         jLabel4.setText("Availability Status");
 
         borUseridTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        borUseridTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                borUseridTFMouseExited(evt);
+            }
+        });
+        borUseridTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borUseridTFActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel5.setText("Name");
@@ -283,27 +304,27 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout borrowPanelLayout = new javax.swing.GroupLayout(borrowPanel);
+        borrowPanel.setLayout(borrowPanelLayout);
+        borrowPanelLayout.setHorizontalGroup(
+            borrowPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(borrowPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        borrowPanelLayout.setVerticalGroup(
+            borrowPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(borrowPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(borrowPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Borrow Book Record", jPanel2);
+        tabbedPane.addTab("Borrow Book Record", borrowPanel);
 
         jLabel13.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel13.setText("User ID");
@@ -475,22 +496,22 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 1315, Short.MAX_VALUE)
+        javax.swing.GroupLayout returnPanelLayout = new javax.swing.GroupLayout(returnPanel);
+        returnPanel.setLayout(returnPanelLayout);
+        returnPanelLayout.setHorizontalGroup(
+            returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(returnPanelLayout.createSequentialGroup()
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        returnPanelLayout.setVerticalGroup(
+            returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(returnPanelLayout.createSequentialGroup()
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 29, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Return Book Record", jPanel3);
+        tabbedPane.addTab("Return Book Record", returnPanel);
 
         backBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         backBtn.setText("BACK");
@@ -500,18 +521,39 @@ public class Operations_GUI extends javax.swing.JFrame {
             }
         });
 
+        insertBtn.setText("INSERT");
+        insertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertBtnActionPerformed(evt);
+            }
+        });
+
+        refreshBtn.setText("REFRESH");
+        refreshBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1321, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(backBtn)))
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1321, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(backBtn))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(477, 477, 477)
+                        .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(50, 50, 50)
+                        .addComponent(insertBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -522,8 +564,12 @@ public class Operations_GUI extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(backBtn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(insertBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -540,11 +586,114 @@ public class Operations_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public boolean isDateValid (String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+        dateFormat.setLenient(false);
+        
+        try {
+            Date parsedDate = dateFormat.parse(date);
+            return true;
+            
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(null, "Invalid date format. Use YYYY-MM-DD");
+        }
+        return false;
+    }
+    
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
         // TODO add your handling code here:
         this.dispose();
         new Operations_GUI().setVisible(true);
     }//GEN-LAST:event_backBtnActionPerformed
+
+    private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_refreshBtnActionPerformed
+
+    private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
+        // TODO add your handling code here:
+        //declare variables
+        int userID;
+        int bookID;
+        String name;
+        String title;
+        String status;
+        
+        int borrowedCount;
+        double dailyCharge;
+        String dueDate;
+        
+        String borrowedDate;
+        String returnedDate;
+        int daysBorrowed;
+        double borrowingCharge;
+        double lateFee;
+        double totalCharge;
+        
+        //check if it is currently on borrow tab
+        if (tabbedPane.getSelectedIndex() == 0) {
+            //borrow tab
+            userID = Integer.parseInt(borUseridTF.getText());
+            name = borNameTF.getText();
+            bookID = Integer.parseInt(borBookidTF.getText());
+            title = borTitleTF.getText();
+            status = borStatusTF.getText();
+            
+            borrowedCount = Integer.parseInt(borCountTF.getText());
+            borrowedDate = borBorrowDateTF.getText();
+            dailyCharge = Integer.parseInt(borChargeTF.getText());
+            dueDate = borDueDateTF.getText();
+            totalCharge = Integer.parseInt(borTotalTF.getText());
+            
+            //check if date is in valid format
+            if (!isDateValid(borrowedDate) && !isDateValid(dueDate)) {
+                return;
+                
+            } else {
+                //store in the database
+                
+                //display in the table only selected value
+            }
+        } else {
+            //return tab
+            userID = Integer.parseInt(retUseridTF.getText());
+            name = retNameTF.getText();
+            bookID = Integer.parseInt(retBookidTF.getText());
+            title = retTitleTF.getText();
+           
+            borrowedDate = retBorrowDateTF.getText();
+            returnedDate = retReturnDateTF.getText();
+            daysBorrowed = Integer.parseInt(retDayBorrowTF.getText());
+            borrowingCharge = Integer.parseInt(retBorrowChargeTF.getText());
+            lateFee = Integer.parseInt(retLateFeeTF.getText());
+            totalCharge = Integer.parseInt(retTotalChargeTF.getText());
+            
+            if (!isDateValid(borrowedDate) && !isDateValid(returnedDate)) {
+                return;
+                
+            } else {
+                
+            }
+        }
+        
+        
+    }//GEN-LAST:event_insertBtnActionPerformed
+
+    private void borUseridTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borUseridTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_borUseridTFActionPerformed
+
+    private void borUseridTFMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_borUseridTFMouseExited
+        // TODO add your handling code here:
+        //search for name based on user id
+        try {
+            int userID = Integer.parseInt(borUseridTF.getText());
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid user ID!");
+            return;
+        }
+    }//GEN-LAST:event_borUseridTFMouseExited
 
     /**
      * @param args the command line arguments
@@ -593,6 +742,8 @@ public class Operations_GUI extends javax.swing.JFrame {
     private javax.swing.JTextField borTitleTF;
     private javax.swing.JTextField borTotalTF;
     private javax.swing.JTextField borUseridTF;
+    private javax.swing.JPanel borrowPanel;
+    private javax.swing.JButton insertBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -616,8 +767,6 @@ public class Operations_GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
@@ -627,7 +776,7 @@ public class Operations_GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JButton refreshBtn;
     private javax.swing.JTextField retBookidTF;
     private javax.swing.JTextField retBorrowChargeTF;
     private javax.swing.JTextField retBorrowDateTF;
@@ -638,6 +787,8 @@ public class Operations_GUI extends javax.swing.JFrame {
     private javax.swing.JTextField retTitleTF;
     private javax.swing.JTextField retTotalChargeTF;
     private javax.swing.JTextField retUseridTF;
+    private javax.swing.JPanel returnPanel;
+    private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JTable table;
     private javax.swing.JTable table2;
     // End of variables declaration//GEN-END:variables
