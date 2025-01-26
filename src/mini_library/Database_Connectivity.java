@@ -29,8 +29,6 @@ public class Database_Connectivity {
         Connection connect = null;
         try {
             connect = DriverManager.getConnection(URL, USER, PASSWORD);
-            JOptionPane.showMessageDialog(null, "Loading...");
-
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Unable to connect to the database.");

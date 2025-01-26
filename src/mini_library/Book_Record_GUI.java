@@ -30,7 +30,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         model = (DefaultTableModel) table.getModel();
-
+        displayAllBook();
     }
 
     /**
@@ -368,16 +368,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_bookidTFActionPerformed
 
     private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
-        try {
-            // Fetch all books from the database
-            ArrayList<Book> bookList = Database_Connectivity.displayAllRecordBook();
+        // Display the books in the table
+        displayAllBook();
 
-            // Display the books in the table
-            displayAllBook(bookList);
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error fetching books from the database: " + e.getMessage());
-        }
     }//GEN-LAST:event_displayAllBtnActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -459,36 +452,108 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_insertBtnActionPerformed
 
+    private void displayAllBook() {
+        model.setRowCount(0);
+
+        try {
+            // Fetch all users from the database
+            ArrayList<Book> booksFromDB = Database_Connectivity.displayAllRecordBook();
+
+            if (booksFromDB.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "There is nothing to display.");
+                return;
+            }
+
+            // Populate the table with the fetched data
+            for (Book b : booksFromDB) {
+                if (b.getCategory().equalsIgnoreCase("Fiction")) {
+                    Fiction_Book fictionBook = (Fiction_Book) b;  // Cast the book to Fiction_Book so we can use the child method - getGenre()
+
+                    model.insertRow(model.getRowCount(), new Object[]{
+                        b.getBookID(),
+                        b.getTitle(),
+                        b.getAuthor(),
+                        b.getPublisher(),
+                        b.getCategory(),
+                        fictionBook.getGenre(),
+                        b.isAvailable()
+                    });
+                } else if (b.getCategory().equalsIgnoreCase("Non-fiction")) {
+                    Non_Fiction_Book fictionBook = (Non_Fiction_Book) b;  // Cast the book to Non_Fiction_Book so we can use the child method - getSubject()
+
+                    model.insertRow(model.getRowCount(), new Object[]{
+                        b.getBookID(),
+                        b.getTitle(),
+                        b.getAuthor(),
+                        b.getPublisher(),
+                        b.getCategory(),
+                        fictionBook.getSubject(),
+                        b.isAvailable()
+
+                    });
+                }
+            }
+
+            // Update the userList to match the database
+            bookList.clear();
+            bookList.addAll(booksFromDB);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching users from the database: " + e.getMessage());
+        }
+
+    }
+
     private void displayAllBook(ArrayList<Book> list) {
         model.setRowCount(0);
-        for (Book b : list) {
-            if (b.getCategory().equalsIgnoreCase("Fiction")) {
-                Fiction_Book fictionBook = (Fiction_Book) b;  // Cast the book to Fiction_Book so we can use the child method - getGenre()
 
-                model.insertRow(model.getRowCount(), new Object[]{
-                    b.getBookID(),
-                    b.getTitle(),
-                    b.getAuthor(),
-                    b.getPublisher(),
-                    b.getCategory(),
-                    fictionBook.getGenre(),
-                    b.isAvailable()
-                });
-            } else if (b.getCategory().equalsIgnoreCase("Non-fiction")) {
-                Non_Fiction_Book fictionBook = (Non_Fiction_Book) b;  // Cast the book to Non_Fiction_Book so we can use the child method - getSubject()
+        try {
+            // Fetch all users from the database
+            ArrayList<Book> booksFromDB = Database_Connectivity.displayAllRecordBook();
 
-                model.insertRow(model.getRowCount(), new Object[]{
-                    b.getBookID(),
-                    b.getTitle(),
-                    b.getAuthor(),
-                    b.getPublisher(),
-                    b.getCategory(),
-                    fictionBook.getSubject(),
-                    b.isAvailable()
-
-                });
+            if (booksFromDB.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "There is nothing to display.");
+                return;
             }
+
+            // Populate the table with the fetched data
+            for (Book b : list) {
+                if (b.getCategory().equalsIgnoreCase("Fiction")) {
+                    Fiction_Book fictionBook = (Fiction_Book) b;  // Cast the book to Fiction_Book so we can use the child method - getGenre()
+
+                    model.insertRow(model.getRowCount(), new Object[]{
+                        b.getBookID(),
+                        b.getTitle(),
+                        b.getAuthor(),
+                        b.getPublisher(),
+                        b.getCategory(),
+                        fictionBook.getGenre(),
+                        b.isAvailable()
+                    });
+                } else if (b.getCategory().equalsIgnoreCase("Non-fiction")) {
+                    Non_Fiction_Book fictionBook = (Non_Fiction_Book) b;  // Cast the book to Non_Fiction_Book so we can use the child method - getSubject()
+
+                    model.insertRow(model.getRowCount(), new Object[]{
+                        b.getBookID(),
+                        b.getTitle(),
+                        b.getAuthor(),
+                        b.getPublisher(),
+                        b.getCategory(),
+                        fictionBook.getSubject(),
+                        b.isAvailable()
+
+                    });
+                }
+            }
+
+            // Update the userList to match the database
+            bookList.clear();
+            bookList.addAll(booksFromDB);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching users from the database: " + e.getMessage());
         }
+
     }
 
     private void clearField() {
@@ -572,18 +637,18 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
         // TODO add your handling code here:
-//        model.setRowCount(0); //reset all existing value in table
         ArrayList<Book> resultList;
 
         int choice = JOptionPane.showConfirmDialog(null, "Click 'Yes' to search based on Author's Name and Click 'No' to search based on Book Title Keyword!", "Search for Book", JOptionPane.YES_NO_OPTION);
 
         try {
+            model.setRowCount(0);
             ArrayList<Book> searchResults;
 
             if (choice == JOptionPane.YES_OPTION) {
                 // Search by author
                 String searchAuthor = JOptionPane.showInputDialog("Enter the Author's Name to be searched.");
-                if (searchAuthor == null || searchAuthor.trim().isEmpty()) {
+                if (searchAuthor == null || searchAuthor.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Please enter a valid author name.");
                     return;
                 }
@@ -594,12 +659,12 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             } else if (choice == JOptionPane.NO_OPTION) {
                 // Search by title keyword
                 String searchKeyword = JOptionPane.showInputDialog("Enter the Book Title's Keyword to be searched.");
-                if (searchKeyword == null || searchKeyword.trim().isEmpty()) {
+                if (searchKeyword == null || searchKeyword.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Please enter a valid title keyword.");
                     return;
                 }
                 // Fetch results from the database
-                Predicate<Book> titleKeyword = book -> book.getAuthor().toLowerCase().equalsIgnoreCase(searchKeyword.toLowerCase());
+                Predicate<Book> titleKeyword = book -> book.getTitle().toLowerCase().contains(searchKeyword.toLowerCase());
                 searchResults = Database_Connectivity.searchBy(titleKeyword);
 
             } else {
@@ -610,7 +675,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             // Display the search results
             if (searchResults != null && !searchResults.isEmpty()) {
                 displayAllBook(searchResults); // Display the results in the table
-//                JOptionPane.showMessageDialog(null, searchResults.size() + " book(s) found.");
+                JOptionPane.showMessageDialog(null, searchResults.size() + " book(s) found.");
             } else {
                 JOptionPane.showMessageDialog(null, "No books found matching the search criteria.");
             }
@@ -677,7 +742,8 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         String category = (String) categoryCB.getSelectedItem();
         String genre_subject = genreTF.getText();
 
-        int choice = JOptionPane.showConfirmDialog(null, "You are editing this book information. \nDo you want to apply these changes?", "Update Book Information", JOptionPane.YES_NO_OPTION);
+        int choice = JOptionPane.showConfirmDialog(null, "You are editing this book information. "
+                + "\nDo you want to apply these changes?", "Update Book Information", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {
             for (Book b : bookList) {
@@ -731,6 +797,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
+        String bookID = bookidTF.getText();
         ArrayList<Book> resultList;
 
         if (bookList.size() == 0) {
@@ -749,14 +816,72 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 + "\nDo you really want to delete this?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
 
         if (choice == JOptionPane.YES_OPTION) {
-            
+            Book searchedBook = null;
+
+            // Search for the user in the list
+            if (!bookID.isEmpty()) {
+                // Search by user ID
+                for (Book book : bookList) {
+                    if (book.getBookID() == Integer.parseInt(bookID)) {
+                        searchedBook = book;
+                        break;
+                    }
+                }
+            }
+
+            // If the user is found, proceed with deletion
+            if (searchedBook != null) {
+                try {
+                    // Delete from the database
+                    Database_Connectivity.deleteRecordBook(searchedBook.getBookID());
+
+                    // Delete from the ArrayList
+                    bookList.remove(searchedBook);
+
+                    // Update the table model
+                    model.setRowCount(0); // Clear the table
+                    for (Book book : bookList) {
+                        String type;
+
+                        if (book.getCategory().equalsIgnoreCase("Fiction")) {
+                            Fiction_Book fbook = (Fiction_Book) book;
+                            type = fbook.getGenre();
+                        } else {
+                            Non_Fiction_Book nfbook = (Non_Fiction_Book) book;
+                            type = nfbook.getSubject();
+
+                        }
+
+                        model.addRow(new Object[]{
+                            book.getBookID(),
+                            book.getTitle(),
+                            book.getAuthor(),
+                            book.getPublisher(),
+                            book.getCategory(),
+                            type});
+                    }
+
+                    // Show success message
+                    JOptionPane.showMessageDialog(null, "User deleted successfully!");
+
+                    // Clear all fields
+                    clearField();
+
+                } catch (SQLException e) {
+                    // Handle database errors
+                    JOptionPane.showMessageDialog(null, "Error deleting user from the database: " + e.getMessage());
+                }
+            } else {
+                // If the user is not found, show an error message
+                JOptionPane.showMessageDialog(null, "User not found!");
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
             return;
         }
 
-        displayAllBook(bookList);
-        clearField();
+//        displayAllBook();
+//        clearField();
 
     }//GEN-LAST:event_deleteBtnActionPerformed
 

@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Asus
  */
+
 public class User_Record_GUI extends javax.swing.JFrame {
 
     /**
@@ -393,6 +394,11 @@ public class User_Record_GUI extends javax.swing.JFrame {
             // Fetch all users from the database
             ArrayList<User> usersFromDB = Database_Connectivity.displayAllRecordUser();
 
+            if (usersFromDB.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "There is nothing to display.");
+                return;
+            }
+
             // Populate the table with the fetched data
             for (User user : usersFromDB) {
                 model.insertRow(model.getRowCount(), new Object[]{
@@ -456,6 +462,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
             try {
                 Database_Connectivity.addRecordUser(newUser);
+                JOptionPane.showMessageDialog(null, "User is added!");
 
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, "Error inserting user into the database: " + e.getMessage());
@@ -464,7 +471,6 @@ public class User_Record_GUI extends javax.swing.JFrame {
             userList.add(newUser);
 
             model.insertRow(model.getRowCount(), new Object[]{userID, name, gender, phoneNo, email});
-            JOptionPane.showMessageDialog(null, "User is added!");
             clearAllField();
 
         } catch (NumberFormatException e) {
@@ -486,27 +492,27 @@ public class User_Record_GUI extends javax.swing.JFrame {
         }
 
         int choice = JOptionPane.showConfirmDialog(null, "Click 'Yes' to search based on User ID and Click 'No' to search based on name!", "Search for User", JOptionPane.YES_NO_OPTION);
-        model.setRowCount(0);
 
         try {
             User searchedUser;
+
             if (choice == JOptionPane.YES_OPTION) {
+                model.setRowCount(0);
                 String id = JOptionPane.showInputDialog(null, "Enter User ID to be searched.");
 
-                if (id != null && !id.isEmpty()) {
-                    Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id);
-                    searchedUser = searchBy(testID);
-                    
-//                    if (searchBy(testID) != null) {
-//                        model.addRow(new Object[] {});
-//                    }
-                    
+                if (id == null || id.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid author name.");
+                    return;
+                }
+
+                Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id);
+                searchedUser = searchBy(testID);
+
+                if (searchedUser != null) {
+
                     try {
                         ArrayList<User> searchResults = Database_Connectivity.searchRecordUser(id.trim());
-                        if (searchResults.size() > 0) {
-                            for (User user : searchResults) {
-                                model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
-                            }
+                        if (!searchResults.isEmpty()) {
                             JOptionPane.showMessageDialog(null, "User is found.");
                         } else {
                             JOptionPane.showMessageDialog(null, "User is not found.");
@@ -516,26 +522,41 @@ public class User_Record_GUI extends javax.swing.JFrame {
                     }
                 }
 
-            } else {
+        }else if (choice == JOptionPane.NO_OPTION) {
+                model.setRowCount(0);
                 String name = JOptionPane.showInputDialog(null, "Enter name to be searched.");
 
-                if (name != null && !name.isEmpty()) {
-                    Tester<User> testName = user -> user.getName().equalsIgnoreCase(name.trim());
+                if (name == null || name.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid author name.");
+                    return;
+                }
 
-                    if (searchBy(testName) != null) {
-                        JOptionPane.showMessageDialog(null, "User is found.");
+                Tester<User> testName = user -> user.getName().equalsIgnoreCase(name.trim());
+                searchedUser = searchBy(testName);
 
-                    } else {
-                        JOptionPane.showMessageDialog(null, "User is not found.");
-
+                if (searchedUser != null) {
+                    try {
+                        ArrayList<User> searchResults = Database_Connectivity.searchRecordUser(name.trim());
+                        if (!searchResults.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "User is found.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "User is not found.");
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, "Error searching user in the database: " + e.getMessage());
                     }
+                } else {
+                    JOptionPane.showMessageDialog(null, "User is not found.");
 
                 }
+        }else {
+                return;
             }
-        } catch (NumberFormatException e) {
+    }
+    catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Make sure you entered the correct input.");
-            return;
-        }
+        return;
+    }
 
 //        String useridStr = useridTF.getText();
 //        String name = nameTF.getText();
@@ -727,36 +748,36 @@ public class User_Record_GUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new User_Record_GUI().setVisible(true);
-            }
-        });
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
+    //</editor-fold>
+
+    /* Create and display the form */
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            new User_Record_GUI().setVisible(true);
+        }
+    });
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup;
