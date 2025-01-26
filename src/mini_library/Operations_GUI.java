@@ -18,12 +18,9 @@ public class Operations_GUI extends javax.swing.JFrame {
     /**
      * Creates new form testReturn
      */
-    
     public Operations_GUI() {
         initComponents();
-         String url = "jdbc:mysql://localhost:3306/your_database_name";
-        String username = "your_username";
-        String password = "your_password";
+        
     }
 
     /**
@@ -566,7 +563,7 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(insertBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(22, Short.MAX_VALUE))
@@ -586,20 +583,20 @@ public class Operations_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public boolean isDateValid (String date) {
+    public boolean isDateValid(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
         dateFormat.setLenient(false);
-        
+
         try {
             Date parsedDate = dateFormat.parse(date);
             return true;
-            
+
         } catch (ParseException e) {
             JOptionPane.showMessageDialog(null, "Invalid date format. Use YYYY-MM-DD");
         }
         return false;
     }
-    
+
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
         // TODO add your handling code here:
         this.dispose();
@@ -618,18 +615,18 @@ public class Operations_GUI extends javax.swing.JFrame {
         String name;
         String title;
         String status;
-        
+
         int borrowedCount;
         double dailyCharge;
         String dueDate;
-        
+
         String borrowedDate;
         String returnedDate;
         int daysBorrowed;
         double borrowingCharge;
         double lateFee;
         double totalCharge;
-        
+
         //check if it is currently on borrow tab
         if (tabbedPane.getSelectedIndex() == 0) {
             //borrow tab
@@ -638,20 +635,20 @@ public class Operations_GUI extends javax.swing.JFrame {
             bookID = Integer.parseInt(borBookidTF.getText());
             title = borTitleTF.getText();
             status = borStatusTF.getText();
-            
+
             borrowedCount = Integer.parseInt(borCountTF.getText());
             borrowedDate = borBorrowDateTF.getText();
             dailyCharge = Integer.parseInt(borChargeTF.getText());
             dueDate = borDueDateTF.getText();
             totalCharge = Integer.parseInt(borTotalTF.getText());
-            
+
             //check if date is in valid format
             if (!isDateValid(borrowedDate) && !isDateValid(dueDate)) {
                 return;
-                
+
             } else {
                 //store in the database
-                
+
                 //display in the table only selected value
             }
         } else {
@@ -660,23 +657,23 @@ public class Operations_GUI extends javax.swing.JFrame {
             name = retNameTF.getText();
             bookID = Integer.parseInt(retBookidTF.getText());
             title = retTitleTF.getText();
-           
+
             borrowedDate = retBorrowDateTF.getText();
             returnedDate = retReturnDateTF.getText();
             daysBorrowed = Integer.parseInt(retDayBorrowTF.getText());
             borrowingCharge = Integer.parseInt(retBorrowChargeTF.getText());
             lateFee = Integer.parseInt(retLateFeeTF.getText());
             totalCharge = Integer.parseInt(retTotalChargeTF.getText());
-            
+
             if (!isDateValid(borrowedDate) && !isDateValid(returnedDate)) {
                 return;
-                
+
             } else {
-                
+
             }
         }
-        
-        
+
+
     }//GEN-LAST:event_insertBtnActionPerformed
 
     private void borUseridTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borUseridTFActionPerformed
@@ -688,7 +685,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         //search for name based on user id
         try {
             int userID = Integer.parseInt(borUseridTF.getText());
-            
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Please enter a valid user ID!");
             return;

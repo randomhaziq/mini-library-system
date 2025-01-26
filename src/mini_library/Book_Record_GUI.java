@@ -4,7 +4,9 @@
  */
 package mini_library;
 
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.function.Predicate;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -12,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Asus
  */
-
 public class Book_Record_GUI extends javax.swing.JFrame {
 
     /**
@@ -20,6 +21,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
      */
     ArrayList<Book> bookList = new ArrayList<>();
     DefaultTableModel model;
+    String url = "jdbc:mysql://localhost:3306/librarydb";
+    String username = "root";
+    String password = "1234";
 
     public Book_Record_GUI() {
         initComponents();
@@ -317,21 +321,20 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                         .addGap(21, 21, 21)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(18, 18, 18))
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)
-                        .addGap(20, 20, 20))))
+                        .addComponent(jButton1)))
+                .addGap(18, 18, 18))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
-                    .addComponent(jLabel1))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton1))
                 .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -366,32 +369,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
     private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
         // TODO add your handling code here:
-        model.setRowCount(0);
-        for (Book b : bookList) {
-            if (b.getCategory().equalsIgnoreCase("Fiction")) {
-                Fiction_Book fictionBook = (Fiction_Book) b;  // Cast the book to Fiction_Book so we can use the child method - getGenre()
-
-                model.insertRow(model.getRowCount(), new Object[]{
-                    b.getBookID(),
-                    b.getTitle(),
-                    b.getAuthor(),
-                    b.getPublisher(),
-                    b.getCategory(),
-                    fictionBook.getGenre()
-                });
-            } else if (b.getCategory().equalsIgnoreCase("Non-fiction")) {
-                Non_Fiction_Book fictionBook = (Non_Fiction_Book) b;  // Cast the book to Non_Fiction_Book so we can use the child method - getSubject()
-
-                model.insertRow(model.getRowCount(), new Object[]{
-                    b.getBookID(),
-                    b.getTitle(),
-                    b.getAuthor(),
-                    b.getPublisher(),
-                    b.getCategory(),
-                    fictionBook.getSubject()
-                });
-            }
-        }
+        displayAllBook(bookList);
     }//GEN-LAST:event_displayAllBtnActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -429,6 +407,27 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 return;
             }
 
+            // Insert into the database
+            String query = "INSERT INTO Books (BookID, Title, Author, Publisher, Category, Genre, Subject) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            try {
+
+                Connection connection = DriverManager.getConnection(url, username, password);
+                PreparedStatement stmt = connection.prepareStatement(query);
+
+                stmt.setInt(1, bookID);
+                stmt.setString(2, title);
+                stmt.setString(3, author);
+                stmt.setString(4, publisher);
+                stmt.setString(5, category);
+                stmt.setString(6, category.equals("Fiction") ? genre_subject : null);
+                stmt.setString(7, category.equals("Non-fiction") ? genre_subject : null);
+                stmt.executeUpdate();
+
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
+                return;
+            }
+
             if (category.equalsIgnoreCase("Fiction")) {
                 Fiction_Book fictionBook = new Fiction_Book(bookID, title, author, publisher, category, genre_subject);
                 bookList.add(fictionBook);
@@ -451,6 +450,35 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             clearField();
         }
     }//GEN-LAST:event_insertBtnActionPerformed
+
+    private void displayAllBook(ArrayList<Book> list) {
+        model.setRowCount(0);
+        for (Book b : list) {
+            if (b.getCategory().equalsIgnoreCase("Fiction")) {
+                Fiction_Book fictionBook = (Fiction_Book) b;  // Cast the book to Fiction_Book so we can use the child method - getGenre()
+
+                model.insertRow(model.getRowCount(), new Object[]{
+                    b.getBookID(),
+                    b.getTitle(),
+                    b.getAuthor(),
+                    b.getPublisher(),
+                    b.getCategory(),
+                    fictionBook.getGenre()
+                });
+            } else if (b.getCategory().equalsIgnoreCase("Non-fiction")) {
+                Non_Fiction_Book fictionBook = (Non_Fiction_Book) b;  // Cast the book to Non_Fiction_Book so we can use the child method - getSubject()
+
+                model.insertRow(model.getRowCount(), new Object[]{
+                    b.getBookID(),
+                    b.getTitle(),
+                    b.getAuthor(),
+                    b.getPublisher(),
+                    b.getCategory(),
+                    fictionBook.getSubject()
+                });
+            }
+        }
+    }
 
     private void clearField() {
         bookidTF.setText("");
@@ -492,21 +520,31 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         return false;
     }
 
-    public Book searchBook(String searchToken) {
-        for (Book book : bookList) {
-            if (book.getAuthor().equalsIgnoreCase(searchToken) || book.getTitle().contains(searchToken)) {
-                if (book instanceof Fiction_Book) {
-                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
+    public ArrayList<Book> searchBy(ArrayList<Book> bookList, Predicate<Book> testBook) {
+        ArrayList<Book> foundBookList = new ArrayList<>();
 
-                } else if (book instanceof Non_Fiction_Book) {
-                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Non_Fiction_Book) book).getSubject()});
-
-                }
-                return book;
+        for (Book b : bookList) {
+            if (testBook.test(b)) {
+                foundBookList.add(b);
             }
         }
-        return null;
+        return foundBookList;
     }
+//    public Book searchBook(String searchToken) {
+//        for (Book book : bookList) {
+//            if (book.getAuthor().equalsIgnoreCase(searchToken) || book.getTitle().contains(searchToken)) {
+//                if (book instanceof Fiction_Book) {
+//                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
+//
+//                } else if (book instanceof Non_Fiction_Book) {
+//                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Non_Fiction_Book) book).getSubject()});
+//
+//                }
+//                return book;
+//            }
+//        }
+//        return null;
+//    }
 
     private void categoryCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryCBActionPerformed
         // TODO add your handling code here:
@@ -523,23 +561,41 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
         // TODO add your handling code here:
-        model.setRowCount(0); //reset all existing value in table
+//        model.setRowCount(0); //reset all existing value in table
+        ArrayList<Book> resultList;
 
-        String title = titleTF.getText();
-        String author = authorTF.getText();
+        int choice = JOptionPane.showConfirmDialog(null, "Click 'Yes' to search based on Author's Name and Click 'No' to search based on Book Title Keyword!", "Search for Book", JOptionPane.YES_NO_OPTION);
 
-        if (title.isEmpty() && author.isEmpty()) {
-            JOptionPane.showMessageDialog(searchBtn, "Enter the name of author or keyword of the title to be searched.");
-            return;
-        }
-
-        //check if either field is filled before proceed to search
-        if (searchBook(title) != null || searchBook(author) != null) {
-            JOptionPane.showMessageDialog(null, "Book is found.");
-
+        if (choice == JOptionPane.YES_OPTION) {
+            String searchAuthor = JOptionPane.showInputDialog("Enter the Author's Name to be searched.");
+            Predicate<Book> authorName = book -> book.getAuthor().equalsIgnoreCase(searchAuthor);
+            resultList = searchBy(bookList, authorName);
         } else {
-            JOptionPane.showMessageDialog(null, "Book is not found.");
+            String searchKeyword = JOptionPane.showInputDialog("Enter the Book Title's Keyword to be searched.");
+            Predicate<Book> keyword = book -> book.getTitle().toLowerCase().contains(searchKeyword.toLowerCase());
+            resultList = searchBy(bookList, keyword);
         }
+
+        if (!resultList.isEmpty()) {
+            displayAllBook(resultList);
+        }
+
+//delete
+//        String title = titleTF.getText();
+//        String author = authorTF.getText();
+//
+//        if (title.isEmpty() && author.isEmpty()) {
+//            JOptionPane.showMessageDialog(searchBtn, "Enter the name of author or keyword of the title to be searched.");
+//            return;
+//        }
+//
+//        //check if either field is filled before proceed to search
+//        if (searchBook(title) != null || searchBook(author) != null) {
+//            JOptionPane.showMessageDialog(null, "Book is found.");
+//
+//        } else {
+//            JOptionPane.showMessageDialog(null, "Book is not found.");
+//        }
 
     }//GEN-LAST:event_searchBtnActionPerformed
 
@@ -629,63 +685,66 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         }
 
-        int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you really want to delete this?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
+        if (!isSomeFieldEmpty()) {
 
-        if (choice == JOptionPane.YES_OPTION) {
-            for (Book b : bookList) {
-                if (b.getTitle().equals(titleTF.getText())) {
-                    bookList.remove(searchBook(b.getTitle()));
-                    model.setRowCount(0);
-                    break;
+            int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you really want to delete this?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
 
+            if (choice == JOptionPane.YES_OPTION) {
+                for (Book b : bookList) {
+                    if (b.getTitle().equals(titleTF.getText())) {
+                        bookList.remove(b);
+                        model.setRowCount(0);
+                        break;
+
+                    }
                 }
+
+                JOptionPane.showMessageDialog(null, "Delete is successful.");
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
+                return;
             }
 
-            JOptionPane.showMessageDialog(null, "Delete is successful.");
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
-            return;
+            displayAllBook(bookList);
+            clearField();
         }
-
-        displayAllBtnActionPerformed(evt);
-        clearField();
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-    } catch (ClassNotFoundException ex) {
-        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(Book_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
+        //</editor-fold>
 
-    /* Create and display the form */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            new Book_Record_GUI().setVisible(true);
-        }
-    });
-}
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Book_Record_GUI().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField authorTF;

@@ -4,6 +4,7 @@
  */
 package mini_library;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -25,6 +26,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
         model = (DefaultTableModel) table.getModel();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        displayAll();
     }
 
     /**
@@ -288,26 +290,27 @@ public class User_Record_GUI extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(30, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(21, 21, 21))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
-                    .addComponent(jLabel1))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton1))
                 .addGap(71, 71, 71)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -381,6 +384,34 @@ public class User_Record_GUI extends javax.swing.JFrame {
         }
         return null;
     }
+    
+    public void displayAll() {
+        // Clear the table model
+        model.setRowCount(0);
+
+        try {
+            // Fetch all users from the database
+            ArrayList<User> usersFromDB = Database_Connectivity.displayAllRecordUser();
+
+            // Populate the table with the fetched data
+            for (User user : usersFromDB) {
+                model.insertRow(model.getRowCount(), new Object[]{
+                    user.getUserID(),
+                    user.getName(),
+                    user.getGender(),
+                    user.getPhoneNumber(),
+                    user.getEmail()
+                });
+            }
+
+            // Update the userList to match the database
+            userList.clear();
+            userList.addAll(usersFromDB);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching users from the database: " + e.getMessage());
+        }
+    }
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -422,6 +453,14 @@ public class User_Record_GUI extends javax.swing.JFrame {
             }
 
             User newUser = new User(userID, name, gender, phoneNo, email);
+
+            try {
+                Database_Connectivity.addRecordUser(newUser);
+
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error inserting user into the database: " + e.getMessage());
+                return;
+            }
             userList.add(newUser);
 
             model.insertRow(model.getRowCount(), new Object[]{userID, name, gender, phoneNo, email});
@@ -454,23 +493,29 @@ public class User_Record_GUI extends javax.swing.JFrame {
                 String id = JOptionPane.showInputDialog(null, "Enter User ID to be searched.");
 
                 if (id != null) {
-                    Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id.trim());
-
-                    if (searchBy(testID) != null) {
-                        JOptionPane.showMessageDialog(null, "User is found.");
-
-                    } else {
-                        JOptionPane.showMessageDialog(null, "User is not found.");
-
+                    try {
+                        System.out.println("1");
+                        ArrayList<User> searchResults = Database_Connectivity.searchRecordUser(id.trim());
+                        if (searchResults.size() > 0) {
+                            System.out.println("2");
+                            for (User user : searchResults) {
+                                model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
+                            }
+                            JOptionPane.showMessageDialog(null, "User is found.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "User is not found.");
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, "Error searching user in the database: " + e.getMessage());
                     }
                 }
 
             } else {
                 String name = JOptionPane.showInputDialog(null, "Enter name to be searched.");
-                
+
                 if (name != null) {
                     Tester<User> testName = user -> user.getName().equalsIgnoreCase(name.trim());
-                    
+
                     if (searchBy(testName) != null) {
                         JOptionPane.showMessageDialog(null, "User is found.");
 
@@ -502,12 +547,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
-        // TODO add your handling code here:
-        model.setRowCount(0);
-
-        for (User user : userList) {
-            model.insertRow(model.getRowCount(), new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
-        }
+        displayAll();
     }//GEN-LAST:event_displayAllBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
@@ -547,6 +587,14 @@ public class User_Record_GUI extends javax.swing.JFrame {
                     } else {
                         user.setGender("Female");
                     }
+
+                    try {
+                        Database_Connectivity.editRecordUser(user);
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, "Error updating user in the database: " + e.getMessage());
+                        return;
+                    }
+
                     model.setRowCount(0);
                     model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
                     break;
@@ -561,41 +609,90 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
+        // Get the user ID and name from the text fields
         String id = useridTF.getText();
         String name = nameTF.getText();
-        User searchedUser = null;
 
-        if (userList.size() == 0) {
+        // Check if the user list is empty
+        if (userList.isEmpty()) {
             JOptionPane.showMessageDialog(null, "There is no user in the list to be deleted.");
             return;
         }
 
+        // Check if the required fields are empty
         if (isSomeFieldEmpty()) {
             JOptionPane.showMessageDialog(null, "Please select a row to be deleted first!");
             return;
         }
 
-        int choice = JOptionPane.showConfirmDialog(null, "You are deleting this user information! \nThis changes is permanent.\nDo you really want to delete this?", "Delete User Information", JOptionPane.YES_NO_OPTION);
+        // Confirm deletion with the user
+        int choice = JOptionPane.showConfirmDialog(null,
+                "You are deleting this user information! \nThis change is permanent.\nDo you really want to delete this?",
+                "Delete User Information",
+                JOptionPane.YES_NO_OPTION
+        );
 
         if (choice == JOptionPane.YES_OPTION) {
+            User searchedUser = null;
 
+            // Search for the user in the list
             if (!id.isEmpty()) {
-                Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id);
-                searchedUser = searchBy(testID);
-            } else {
-                Tester<User> testName = user -> user.getName().equalsIgnoreCase(name);
-                searchedUser = searchBy(testName);
+                // Search by user ID
+                for (User user : userList) {
+                    if (user.getUserID() == Integer.parseInt(id)) {
+                        searchedUser = user;
+                        break;
+                    }
+                }
+            } else if (!name.isEmpty()) {
+                // Search by name
+                for (User user : userList) {
+                    if (user.getName().equalsIgnoreCase(name)) {
+                        searchedUser = user;
+                        break;
+                    }
+                }
             }
 
-            model.setRowCount(0);
-            userList.remove(searchedUser);
-            JOptionPane.showMessageDialog(null, "Delete is successful.");
+            // If the user is found, proceed with deletion
+            if (searchedUser != null) {
+                try {
+                    // Delete from the database
+                    Database_Connectivity.deleteRecordUser(String.valueOf(searchedUser.getUserID()));
 
+                    // Delete from the ArrayList
+                    userList.remove(searchedUser);
+
+                    // Update the table model
+                    model.setRowCount(0); // Clear the table
+                    for (User user : userList) {
+                        model.addRow(new Object[]{
+                            user.getUserID(),
+                            user.getName(),
+                            user.getGender(),
+                            user.getPhoneNumber(),
+                            user.getEmail()
+                        });
+                    }
+
+                    // Show success message
+                    JOptionPane.showMessageDialog(null, "User deleted successfully!");
+
+                    // Clear all fields
+                    clearAllField();
+
+                } catch (SQLException e) {
+                    // Handle database errors
+                    JOptionPane.showMessageDialog(null, "Error deleting user from the database: " + e.getMessage());
+                }
+            } else {
+                // If the user is not found, show an error message
+                JOptionPane.showMessageDialog(null, "User not found!");
+            }
         } else {
-            JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
+            // If the user cancels the deletion, show a message
+            JOptionPane.showMessageDialog(null, "Deletion cancelled. No changes were made.");
         }
-        displayAllBtnActionPerformed(evt);
-        clearAllField();
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
