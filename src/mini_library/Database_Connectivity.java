@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.function.Predicate;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,6 +23,7 @@ public class Database_Connectivity {
     private static final String USER = "root";
     private static final String PASSWORD = "1234";
     private static ArrayList<User> userList = new ArrayList<>();
+    private static ArrayList<Book> bookList = new ArrayList<>();
 
     public static Connection databaseConnect() {
         Connection connect = null;
@@ -139,18 +141,21 @@ public class Database_Connectivity {
         return userList;
     }
 
-    public static ArrayList<User> deleteRecordUser(String token) throws SQLException {
+    public static ArrayList<User> deleteRecordUser(int userID) throws SQLException {
         Connection connection = databaseConnect();
-        String sql = "DELETE FROM USERS WHERE borrowerID = ? OR name = ?";
+        String sql = "DELETE FROM USERS WHERE borrowerID = ?";
         PreparedStatement stmt = connection.prepareStatement(sql);
 
-        stmt.setString(1, token);
-        stmt.setString(2, token);
+        stmt.setInt(1, userID);
 
         int rowDeleted = stmt.executeUpdate();
         if (rowDeleted > 0) {
             // Remove the user from the userList
-            userList.removeIf(user -> user.getUserID() == Integer.parseInt(token) || user.getName().equals(token));
+            for (User user : userList) {
+                if (user.getUserID() == userID) {
+                    userList.remove(user);
+                }
+            }
         }
 
         stmt.close();
@@ -214,7 +219,7 @@ public class Database_Connectivity {
         stmt.setString(4, book.getCategory());
         stmt.setBoolean(7, book.isAvailable());
         stmt.setInt(8, book.getBookID());
-        
+
         if (book.getCategory() != null) {
             if (book.getCategory().equalsIgnoreCase("Fiction")) {
                 Fiction_Book fb = (Fiction_Book) book;
@@ -237,27 +242,36 @@ public class Database_Connectivity {
         return row;
     }
 
-    public static ArrayList<User> searchRecordBook(String token) throws SQLException {
+    public static ArrayList<Book> searchBy(Predicate<Book> searchToken) throws SQLException {
         Connection connection = databaseConnect();
-
-        String sql = "SELECT * FROM BOOKS "
-                + "WHERE borrowerID = ? OR name = ?";
+        String sql = "SELECT * FROM BOOKS"; // Fetch all books from the database
         PreparedStatement statement = connection.prepareStatement(sql);
 
-        statement.setString(1, token);
-        statement.setString(2, token);
-
         ResultSet resultSet = statement.executeQuery();
-        ArrayList<User> searchResults = new ArrayList<>();
+        ArrayList<Book> searchResults = new ArrayList<>();
 
         while (resultSet.next()) {
-            int userID = resultSet.getInt("borrowerID");
-            String name = resultSet.getString("name");
-            String gender = resultSet.getString("gender");
-            String phoneNo = resultSet.getString("phoneNumber");
-            String email = resultSet.getString("email");
+            int bookID = resultSet.getInt("bookID");
+            String title = resultSet.getString("title");
+            String author = resultSet.getString("author");
+            String publisher = resultSet.getString("publisher");
+            String category = resultSet.getString("category");
+            String genre = resultSet.getString("genre");
+            String subject = resultSet.getString("subject");
+            boolean availability = resultSet.getBoolean("availability");
 
-            searchResults.add(new User(userID, name, gender, phoneNo, email));
+            // Create a Book object based on the category
+            Book book;
+            if (category.equalsIgnoreCase("Fiction")) {
+                book = new Fiction_Book(bookID, title, author, publisher, category, genre);
+            } else {
+                book = new Non_Fiction_Book(bookID, title, author, publisher, category, subject);
+            }
+
+            // Apply the condition (lambda function) to filter books
+            if (searchToken.test(book)) {
+                searchResults.add(book);
+            }
         }
 
         resultSet.close();
@@ -265,6 +279,34 @@ public class Database_Connectivity {
         connection.close();
         return searchResults;
     }
+//    public static ArrayList<User> searchRecordBook(String token) throws SQLException {
+//        Connection connection = databaseConnect();
+//
+//        String sql = "SELECT * FROM BOOKS "
+//                + "WHERE borrowerID = ? OR name = ?";
+//        PreparedStatement statement = connection.prepareStatement(sql);
+//
+//        statement.setString(1, token);
+//        statement.setString(2, token);
+//
+//        ResultSet resultSet = statement.executeQuery();
+//        ArrayList<User> searchResults = new ArrayList<>();
+//
+//        while (resultSet.next()) {
+//            int userID = resultSet.getInt("borrowerID");
+//            String name = resultSet.getString("name");
+//            String gender = resultSet.getString("gender");
+//            String phoneNo = resultSet.getString("phoneNumber");
+//            String email = resultSet.getString("email");
+//
+//            searchResults.add(new User(userID, name, gender, phoneNo, email));
+//        }
+//
+//        resultSet.close();
+//        statement.close();
+//        connection.close();
+//        return searchResults;
+//    }
 
     //function button for display all information
     public static ArrayList<Book> displayAllRecordBook() throws SQLException {
@@ -277,13 +319,22 @@ public class Database_Connectivity {
 
         // Iterate through the result set and create User objects
         while (resultSet.next()) {
-            int userID = resultSet.getInt("borrowerID");
-            String name = resultSet.getString("name");
-            String gender = resultSet.getString("gender");
-            String phoneNo = resultSet.getString("phoneNumber");
-            String email = resultSet.getString("email");
+            int bookID = resultSet.getInt("bookID");
+            String title = resultSet.getString("title");
+            String author = resultSet.getString("author");
+            String publisher = resultSet.getString("publisher");
+            String category = resultSet.getString("category");
+            String genre = resultSet.getString("genre");
+            String subject = resultSet.getString("subject");
+            boolean availability = resultSet.getBoolean("availability");
 
-            userList.add(new User(userID, name, gender, phoneNo, email));
+            Book book;
+            if (category.equalsIgnoreCase("Fiction")) {
+                book = new Fiction_Book(bookID, title, author, publisher, category, genre);
+            } else {
+                book = new Non_Fiction_Book(bookID, title, author, publisher, category, subject);
+            }
+            bookList.add(book);
         }
 
         // Close resources
@@ -294,22 +345,25 @@ public class Database_Connectivity {
         return bookList;
     }
 
-    public static ArrayList<User> deleteRecordBook(String token) throws SQLException {
+    public static ArrayList<Book> deleteRecordBook(int bookID) throws SQLException {
         Connection connection = databaseConnect();
-        String sql = "DELETE FROM USERS WHERE borrowerID = ? OR name = ?";
+        String sql = "DELETE FROM BOOKS WHERE bookID = ?";
         PreparedStatement stmt = connection.prepareStatement(sql);
 
-        stmt.setString(1, token);
-        stmt.setString(2, token);
+        stmt.setInt(1, bookID);
 
         int rowDeleted = stmt.executeUpdate();
         if (rowDeleted > 0) {
             // Remove the user from the userList
-            userList.removeIf(user -> user.getUserID() == Integer.parseInt(token) || user.getName().equals(token));
+            for (Book book : bookList) {
+                if (book.getBookID() == bookID) {
+                    bookList.remove(book);
+                }
+            }
         }
 
         stmt.close();
         connection.close();
-        return userList;
+        return bookList;
     }
 }

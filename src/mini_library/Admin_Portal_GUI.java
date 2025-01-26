@@ -129,7 +129,7 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
             }
         });
 
-        labelOperation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mini_library/Library_Operation.jpg"))); // NOI18N
+        labelOperation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mini_library/Icon_Operation.jpg"))); // NOI18N
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -158,7 +158,7 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
             }
         });
 
-        labelBookRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mini_library/Book.jpg"))); // NOI18N
+        labelBookRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mini_library/Icon_Book.jpg"))); // NOI18N
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -187,7 +187,7 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
             }
         });
 
-        labelUserRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mini_library/Ratio_User.jpg"))); // NOI18N
+        labelUserRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mini_library/Icon_User.jpg"))); // NOI18N
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -238,7 +238,7 @@ public class Admin_Portal_GUI extends javax.swing.JFrame {
                         .addGap(12, 12, 12)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)

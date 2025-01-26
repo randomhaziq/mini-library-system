@@ -384,7 +384,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
         }
         return null;
     }
-    
+
     public void displayAll() {
         // Clear the table model
         model.setRowCount(0);
@@ -489,15 +489,21 @@ public class User_Record_GUI extends javax.swing.JFrame {
         model.setRowCount(0);
 
         try {
+            User searchedUser;
             if (choice == JOptionPane.YES_OPTION) {
                 String id = JOptionPane.showInputDialog(null, "Enter User ID to be searched.");
 
-                if (id != null) {
+                if (id != null && !id.isEmpty()) {
+                    Tester<User> testID = user -> user.getUserID() == Integer.parseInt(id);
+                    searchedUser = searchBy(testID);
+                    
+//                    if (searchBy(testID) != null) {
+//                        model.addRow(new Object[] {});
+//                    }
+                    
                     try {
-                        System.out.println("1");
                         ArrayList<User> searchResults = Database_Connectivity.searchRecordUser(id.trim());
                         if (searchResults.size() > 0) {
-                            System.out.println("2");
                             for (User user : searchResults) {
                                 model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
                             }
@@ -513,7 +519,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
             } else {
                 String name = JOptionPane.showInputDialog(null, "Enter name to be searched.");
 
-                if (name != null) {
+                if (name != null && !name.isEmpty()) {
                     Tester<User> testName = user -> user.getName().equalsIgnoreCase(name.trim());
 
                     if (searchBy(testName) != null) {
@@ -658,7 +664,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
             if (searchedUser != null) {
                 try {
                     // Delete from the database
-                    Database_Connectivity.deleteRecordUser(String.valueOf(searchedUser.getUserID()));
+                    Database_Connectivity.deleteRecordUser(searchedUser.getUserID());
 
                     // Delete from the ArrayList
                     userList.remove(searchedUser);

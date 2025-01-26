@@ -368,8 +368,16 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_bookidTFActionPerformed
 
     private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
-        // TODO add your handling code here:
-        displayAllBook(bookList);
+        try {
+            // Fetch all books from the database
+            ArrayList<Book> bookList = Database_Connectivity.displayAllRecordBook();
+
+            // Display the books in the table
+            displayAllBook(bookList);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching books from the database: " + e.getMessage());
+        }
     }//GEN-LAST:event_displayAllBtnActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -463,7 +471,8 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                     b.getAuthor(),
                     b.getPublisher(),
                     b.getCategory(),
-                    fictionBook.getGenre()
+                    fictionBook.getGenre(),
+                    b.isAvailable()
                 });
             } else if (b.getCategory().equalsIgnoreCase("Non-fiction")) {
                 Non_Fiction_Book fictionBook = (Non_Fiction_Book) b;  // Cast the book to Non_Fiction_Book so we can use the child method - getSubject()
@@ -474,7 +483,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                     b.getAuthor(),
                     b.getPublisher(),
                     b.getCategory(),
-                    fictionBook.getSubject()
+                    fictionBook.getSubject(),
+                    b.isAvailable()
+
                 });
             }
         }
@@ -566,19 +577,60 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         int choice = JOptionPane.showConfirmDialog(null, "Click 'Yes' to search based on Author's Name and Click 'No' to search based on Book Title Keyword!", "Search for Book", JOptionPane.YES_NO_OPTION);
 
-        if (choice == JOptionPane.YES_OPTION) {
-            String searchAuthor = JOptionPane.showInputDialog("Enter the Author's Name to be searched.");
-            Predicate<Book> authorName = book -> book.getAuthor().equalsIgnoreCase(searchAuthor);
-            resultList = searchBy(bookList, authorName);
-        } else {
-            String searchKeyword = JOptionPane.showInputDialog("Enter the Book Title's Keyword to be searched.");
-            Predicate<Book> keyword = book -> book.getTitle().toLowerCase().contains(searchKeyword.toLowerCase());
-            resultList = searchBy(bookList, keyword);
-        }
+        try {
+            ArrayList<Book> searchResults;
 
-        if (!resultList.isEmpty()) {
-            displayAllBook(resultList);
+            if (choice == JOptionPane.YES_OPTION) {
+                // Search by author
+                String searchAuthor = JOptionPane.showInputDialog("Enter the Author's Name to be searched.");
+                if (searchAuthor == null || searchAuthor.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid author name.");
+                    return;
+                }
+                // Fetch results from the database
+                Predicate<Book> authorName = book -> book.getAuthor().equalsIgnoreCase(searchAuthor);
+                searchResults = Database_Connectivity.searchBy(authorName);
+
+            } else if (choice == JOptionPane.NO_OPTION) {
+                // Search by title keyword
+                String searchKeyword = JOptionPane.showInputDialog("Enter the Book Title's Keyword to be searched.");
+                if (searchKeyword == null || searchKeyword.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid title keyword.");
+                    return;
+                }
+                // Fetch results from the database
+                Predicate<Book> titleKeyword = book -> book.getAuthor().toLowerCase().equalsIgnoreCase(searchKeyword.toLowerCase());
+                searchResults = Database_Connectivity.searchBy(titleKeyword);
+
+            } else {
+                // if the User canceled the search
+                return;
+            }
+
+            // Display the search results
+            if (searchResults != null && !searchResults.isEmpty()) {
+                displayAllBook(searchResults); // Display the results in the table
+//                JOptionPane.showMessageDialog(null, searchResults.size() + " book(s) found.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No books found matching the search criteria.");
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error searching for books: " + e.getMessage());
         }
+//        if (choice == JOptionPane.YES_OPTION) {
+//            String searchAuthor = JOptionPane.showInputDialog("Enter the Author's Name to be searched.");
+//            Predicate<Book> authorName = book -> book.getAuthor().equalsIgnoreCase(searchAuthor);
+//            resultList = searchBy(bookList, authorName);
+//        } else {
+//            String searchKeyword = JOptionPane.showInputDialog("Enter the Book Title's Keyword to be searched.");
+//            Predicate<Book> keyword = book -> book.getTitle().toLowerCase().contains(searchKeyword.toLowerCase());
+//            resultList = searchBy(bookList, keyword);
+//        }
+//
+//        if (!resultList.isEmpty()) {
+//            displayAllBook(resultList);
+//        }
 
 //delete
 //        String title = titleTF.getText();
@@ -679,36 +731,33 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
         // TODO add your handling code here:
+        ArrayList<Book> resultList;
+
         if (bookList.size() == 0) {
             JOptionPane.showMessageDialog(null, "There is no book in the list to be deleted.");
             return;
 
         }
 
-        if (!isSomeFieldEmpty()) {
-
-            int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! \nThis changes is permanent.\nDo you really want to delete this?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
-
-            if (choice == JOptionPane.YES_OPTION) {
-                for (Book b : bookList) {
-                    if (b.getTitle().equals(titleTF.getText())) {
-                        bookList.remove(b);
-                        model.setRowCount(0);
-                        break;
-
-                    }
-                }
-
-                JOptionPane.showMessageDialog(null, "Delete is successful.");
-
-            } else {
-                JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
-                return;
-            }
-
-            displayAllBook(bookList);
-            clearField();
+        if (isSomeFieldEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please select a row to be deleted first!");
+            return;
         }
+
+        int choice = JOptionPane.showConfirmDialog(null, "You are deleting this book information! "
+                + "\nThis changes is permanent."
+                + "\nDo you really want to delete this?", "Delete Book Information", JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            
+        } else {
+            JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
+            return;
+        }
+
+        displayAllBook(bookList);
+        clearField();
+
     }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
