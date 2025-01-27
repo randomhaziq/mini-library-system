@@ -4,10 +4,14 @@
  */
 package mini_library;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.function.Predicate;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,9 +22,15 @@ public class Operations_GUI extends javax.swing.JFrame {
     /**
      * Creates new form testReturn
      */
+    DefaultTableModel model;
+
     public Operations_GUI() {
         initComponents();
-        
+        model = (DefaultTableModel) table.getModel();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setEnabledReturnPanel(false);
+        setEnabledBorrowPanel(false);
     }
 
     /**
@@ -34,6 +44,7 @@ public class Operations_GUI extends javax.swing.JFrame {
 
         jLabel12 = new javax.swing.JLabel();
         jSplitPane1 = new javax.swing.JSplitPane();
+        jButton1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         tabbedPane = new javax.swing.JTabbedPane();
@@ -59,7 +70,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         borDueDateTF = new javax.swing.JTextField();
-        borTotalTF = new javax.swing.JTextField();
+        borTotalChargeTF = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
@@ -95,13 +106,19 @@ public class Operations_GUI extends javax.swing.JFrame {
 
         jLabel12.setText("jLabel12");
 
+        jButton1.setText("jButton1");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(102, 102, 255));
 
-        jPanel1.setBackground(new java.awt.Color(153, 153, 255));
+        jPanel1.setBackground(new java.awt.Color(102, 102, 255));
 
         jLabel1.setFont(new java.awt.Font("Rockwell", 3, 36)); // NOI18N
         jLabel1.setText("OPERATIONS");
+
+        borrowPanel.setBackground(new java.awt.Color(0, 0, 153));
+
+        jPanel4.setBackground(new java.awt.Color(0, 0, 153));
 
         jLabel2.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel2.setText("User ID");
@@ -113,6 +130,11 @@ public class Operations_GUI extends javax.swing.JFrame {
         jLabel4.setText("Availability Status");
 
         borUseridTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        borUseridTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                borUseridTFFocusLost(evt);
+            }
+        });
         borUseridTF.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 borUseridTFMouseExited(evt);
@@ -123,6 +145,11 @@ public class Operations_GUI extends javax.swing.JFrame {
                 borUseridTFActionPerformed(evt);
             }
         });
+        borUseridTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                borUseridTFKeyReleased(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel5.setText("Name");
@@ -131,6 +158,11 @@ public class Operations_GUI extends javax.swing.JFrame {
         jLabel6.setText("Title");
 
         borBookidTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        borBookidTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                borBookidTFFocusLost(evt);
+            }
+        });
 
         borStatusTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
@@ -138,10 +170,17 @@ public class Operations_GUI extends javax.swing.JFrame {
 
         borTitleTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
+        jPanel9.setBackground(new java.awt.Color(0, 0, 153));
+
         jLabel8.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel8.setText("Borrowed Count");
 
         borCountTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        borCountTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borCountTFActionPerformed(evt);
+            }
+        });
 
         jLabel7.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel7.setText("Borrowed Date");
@@ -161,7 +200,7 @@ public class Operations_GUI extends javax.swing.JFrame {
 
         borDueDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
-        borTotalTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        borTotalChargeTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -188,7 +227,7 @@ public class Operations_GUI extends javax.swing.JFrame {
                     .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(25, 25, 25)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(borTotalTF, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
+                    .addComponent(borTotalChargeTF, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                     .addComponent(borDueDateTF))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
@@ -198,7 +237,7 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addGap(9, 9, 9)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(borTotalTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(borTotalChargeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel11))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel9Layout.createSequentialGroup()
@@ -290,7 +329,7 @@ public class Operations_GUI extends javax.swing.JFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 626, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -309,19 +348,26 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         borrowPanelLayout.setVerticalGroup(
             borrowPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(borrowPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(borrowPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(borrowPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         tabbedPane.addTab("Borrow Book Record", borrowPanel);
+
+        returnPanel.setBackground(new java.awt.Color(0, 0, 153));
+
+        jPanel6.setBackground(new java.awt.Color(0, 0, 153));
+
+        jPanel7.setBackground(new java.awt.Color(0, 0, 153));
 
         jLabel13.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel13.setText("User ID");
@@ -354,12 +400,46 @@ public class Operations_GUI extends javax.swing.JFrame {
         jLabel22.setText("Total Charge");
 
         retUseridTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        retUseridTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                retUseridTFFocusLost(evt);
+            }
+        });
+        retUseridTF.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                retUseridTFInputMethodTextChanged(evt);
+            }
+        });
 
         retBookidTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        retBookidTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                retBookidTFFocusLost(evt);
+            }
+        });
 
         retBorrowDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        retBorrowDateTF.setText("(yyyy-mm-dd)");
+        retBorrowDateTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                retBorrowDateTFMouseClicked(evt);
+            }
+        });
+        retBorrowDateTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                retBorrowDateTFActionPerformed(evt);
+            }
+        });
 
         retReturnDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        retReturnDateTF.setText("(yyyy-mm-dd)");
+        retReturnDateTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                retReturnDateTFMouseClicked(evt);
+            }
+        });
 
         retDayBorrowTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
@@ -372,6 +452,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         retTitleTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
         retNameTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        retNameTF.setForeground(new java.awt.Color(0, 0, 0));
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -479,17 +560,20 @@ public class Operations_GUI extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -504,8 +588,9 @@ public class Operations_GUI extends javax.swing.JFrame {
         returnPanelLayout.setVerticalGroup(
             returnPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(returnPanelLayout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 29, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         tabbedPane.addTab("Return Book Record", returnPanel);
@@ -563,8 +648,8 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(insertBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(insertBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
@@ -583,6 +668,61 @@ public class Operations_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void setEnabledReturnPanel(boolean condition) {
+        retNameTF.setEnabled(condition);
+        retTitleTF.setEnabled(condition);
+        retBorrowChargeTF.setEnabled(condition);
+        retLateFeeTF.setEnabled(condition);
+        retTotalChargeTF.setEnabled(condition);
+
+    }
+
+    public void setEnabledBorrowPanel(boolean condition) {
+        borNameTF.setEnabled(condition);
+        borTitleTF.setEnabled(condition);
+        borDueDateTF.setEnabled(condition);
+        borTotalChargeTF.setEnabled(condition);
+
+    }
+
+    public void printName(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            ArrayList<User> userList = Database_Connectivity.searchRecordUser(text);
+
+            for (User user : userList) {
+                retNameTF.setText(user.getName());
+            }
+
+        } catch (SQLException e) {
+
+        }
+    }
+
+    public void printTitle(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return;
+        }
+
+        Predicate<Book> bookID = book -> book.getBookID() == Integer.parseInt(text);
+        try {
+            ArrayList<Book> bookList = Database_Connectivity.searchBy(bookID);
+
+            for (Book book : bookList) {
+                retTitleTF.setText(book.getTitle());
+                borTitleTF.setText(book.getTitle());
+                
+                borStatusTF.setText(String.valueOf(book.isAvailable()));
+            }
+
+        } catch (SQLException e) {
+
+        }
+    }
+
     public boolean isDateValid(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
         dateFormat.setLenient(false);
@@ -600,7 +740,7 @@ public class Operations_GUI extends javax.swing.JFrame {
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        new Operations_GUI().setVisible(true);
+        new Admin_Portal_GUI().setVisible(true);
     }//GEN-LAST:event_backBtnActionPerformed
 
     private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
@@ -640,7 +780,7 @@ public class Operations_GUI extends javax.swing.JFrame {
             borrowedDate = borBorrowDateTF.getText();
             dailyCharge = Integer.parseInt(borChargeTF.getText());
             dueDate = borDueDateTF.getText();
-            totalCharge = Integer.parseInt(borTotalTF.getText());
+            totalCharge = Integer.parseInt(borTotalChargeTF.getText());
 
             //check if date is in valid format
             if (!isDateValid(borrowedDate) && !isDateValid(dueDate)) {
@@ -682,15 +822,57 @@ public class Operations_GUI extends javax.swing.JFrame {
 
     private void borUseridTFMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_borUseridTFMouseExited
         // TODO add your handling code here:
-        //search for name based on user id
-        try {
-            int userID = Integer.parseInt(borUseridTF.getText());
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Please enter a valid user ID!");
-            return;
-        }
     }//GEN-LAST:event_borUseridTFMouseExited
+
+    private void retBorrowDateTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retBorrowDateTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_retBorrowDateTFActionPerformed
+
+    private void borCountTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borCountTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_borCountTFActionPerformed
+
+    private void borUseridTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_borUseridTFKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_borUseridTFKeyReleased
+
+    private void retUseridTFInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_retUseridTFInputMethodTextChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_retUseridTFInputMethodTextChanged
+
+    private void retUseridTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_retUseridTFFocusLost
+        // TODO add your handling code here:
+        String userID = retUseridTF.getText();
+        printName(userID);
+    }//GEN-LAST:event_retUseridTFFocusLost
+
+    private void retBookidTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_retBookidTFFocusLost
+        // TODO add your handling code here:
+        String bookID = retUseridTF.getText();
+        printTitle(bookID);
+    }//GEN-LAST:event_retBookidTFFocusLost
+
+    private void retBorrowDateTFMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_retBorrowDateTFMouseClicked
+        // TODO add your handling code here:
+        retBorrowDateTF.setText("");
+    }//GEN-LAST:event_retBorrowDateTFMouseClicked
+
+    private void retReturnDateTFMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_retReturnDateTFMouseClicked
+        // TODO add your handling code here:
+        retBorrowDateTF.setText("");
+    }//GEN-LAST:event_retReturnDateTFMouseClicked
+
+    private void borUseridTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_borUseridTFFocusLost
+        // TODO add your handling code here:
+        String userID = borUseridTF.getText();
+        printName(userID);
+    }//GEN-LAST:event_borUseridTFFocusLost
+
+    private void borBookidTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_borBookidTFFocusLost
+        // TODO add your handling code here:
+        String bookID = borUseridTF.getText();
+        printTitle(bookID);
+    }//GEN-LAST:event_borBookidTFFocusLost
 
     /**
      * @param args the command line arguments
@@ -737,10 +919,11 @@ public class Operations_GUI extends javax.swing.JFrame {
     private javax.swing.JTextField borNameTF;
     private javax.swing.JTextField borStatusTF;
     private javax.swing.JTextField borTitleTF;
-    private javax.swing.JTextField borTotalTF;
+    private javax.swing.JTextField borTotalChargeTF;
     private javax.swing.JTextField borUseridTF;
     private javax.swing.JPanel borrowPanel;
     private javax.swing.JButton insertBtn;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

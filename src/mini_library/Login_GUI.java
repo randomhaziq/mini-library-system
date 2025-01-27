@@ -167,13 +167,13 @@ public class Login_GUI extends javax.swing.JFrame {
         String adminUsername = "Admin123";
         String adminPassword = "1234";
 
-        if (!username.equals(adminUsername) && !password.equals(adminPassword)) {
-            JOptionPane.showMessageDialog(null, "Incorrect username and/or password!");
-            return;
-        } else {
+        if (username.equals(adminUsername) && password.equals(adminPassword)) {
             JOptionPane.showMessageDialog(null, "Login successful...");
             this.dispose();
             new Admin_Portal_GUI().setVisible(true);
+            
+        } else {
+           JOptionPane.showMessageDialog(null, "Incorrect username and/or password!");
         }
     }//GEN-LAST:event_loginBtnActionPerformed
 
