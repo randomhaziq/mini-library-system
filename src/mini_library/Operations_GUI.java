@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,6 +40,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         this.setTitle("Operations");
         setEditableReturnPanel(false);
         setEditableBorrowPanel(false);
+        refreshTable();
     }
 
     /**
@@ -126,6 +128,11 @@ public class Operations_GUI extends javax.swing.JFrame {
         jLabel1.setText("OPERATIONS");
 
         tabbedPane.setBackground(new java.awt.Color(0, 51, 255));
+        tabbedPane.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabbedPaneMouseClicked(evt);
+            }
+        });
 
         borrowPanel.setBackground(new java.awt.Color(0, 0, 153));
 
@@ -474,6 +481,11 @@ public class Operations_GUI extends javax.swing.JFrame {
                 retBookidTFFocusLost(evt);
             }
         });
+        retBookidTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                retBookidTFActionPerformed(evt);
+            }
+        });
 
         retBorrowDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         retBorrowDateTF.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -769,7 +781,7 @@ public class Operations_GUI extends javax.swing.JFrame {
             String bookid = borBookidTF.getText();
             String borrowDate = borBorrowDateTF.getText();
 
-            if (userid.isEmpty() || bookid.isEmpty() || borrowDate.isEmpty()) {
+            if (userid.trim().isEmpty() || bookid.trim().isEmpty() || borrowDate.trim().isEmpty()) {
                 return true;
             }
         } else if (selectedTabTitle.equals("Return Book Record")) {
@@ -777,7 +789,7 @@ public class Operations_GUI extends javax.swing.JFrame {
             String bookid = retBookidTF.getText();
             String reteurnDate = retReturnDateTF.getText();
 
-            if (userid.isEmpty() || bookid.isEmpty() || reteurnDate.isEmpty()) {
+            if (userid.trim().isEmpty() || bookid.trim().isEmpty() || reteurnDate.trim().isEmpty()) {
                 return true;
             }
 
@@ -879,15 +891,17 @@ public class Operations_GUI extends javax.swing.JFrame {
 
     private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
         // TODO add your handling code here:
+        refreshTable();
+    }//GEN-LAST:event_refreshBtnActionPerformed
+
+    public void refreshTable() {
         int selectedTabIndex = tabbedPane.getSelectedIndex();
         String selectedTabTitle = tabbedPane.getTitleAt(selectedTabIndex);
-        String name = retNameTF.getText();
-        String title = retTitleTF.getText();
 
         if (selectedTabTitle.equals("Borrow Book Record")) {
             model1.setRowCount(0);
             try {
-                ArrayList<Borrow_Record> resultList = Database_Connectivity.displayAllRecordBorrow(name, title);
+                ArrayList<Borrow_Record> resultList = Database_Connectivity.displayAllRecordBorrow();
 
                 for (Borrow_Record br : resultList) {
                     model1.addRow(new Object[]{br.getUserID(), br.getName(), br.getBookID(), br.getTitle(), br.getDailyCharge(), br.getTotalCharge()});
@@ -900,7 +914,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         } else {
             try {
                 model2.setRowCount(0);
-                ArrayList<Return_Record> resultList = Database_Connectivity.displayAllRecordReturn(name, title);
+                ArrayList<Return_Record> resultList = Database_Connectivity.displayAllRecordReturn();
 
                 for (Return_Record rr : resultList) {
                     model2.addRow(new Object[]{rr.getUserID(), rr.getName(), rr.getBookID(), rr.getTitle(), rr.getDaysBorrowed(), rr.getTotalCharge()});
@@ -910,8 +924,8 @@ public class Operations_GUI extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error when fetching the data from the database.");
             }
         }
-    }//GEN-LAST:event_refreshBtnActionPerformed
-
+    }
+    
     private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
         // TODO add your handling code here:
         //declare variables
@@ -940,6 +954,7 @@ public class Operations_GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Some field value is missing.");
             return;
         }
+
         try {
             if (selectedTabTitle.equals("Borrow Book Record")) {
                 userID = Integer.parseInt(borUseridTF.getText());
@@ -957,7 +972,7 @@ public class Operations_GUI extends javax.swing.JFrame {
                 if (isDateValid(borrowedDate) && isDateValid(dueDate)) {
                     try {
                         if (Database_Connectivity.isEligibleToBorrow(userID, bookID)) {
-                            Database_Connectivity.insertBorrowRecord(userID, bookID, status, borrowedDate, dueDate, dailyCharge, totalCharge);
+                            Database_Connectivity.insertBorrowRecord(userID, name, bookID, title, status, borrowedDate, dueDate, dailyCharge, totalCharge);
                             borrowList.add(new Borrow_Record(userID, name, bookID, title, status, borrowedDate, dueDate, dailyCharge, totalCharge));
 
                             model1.insertRow(model1.getRowCount(), new Object[]{userID, name, bookID, title, dailyCharge, totalCharge});
@@ -969,7 +984,7 @@ public class Operations_GUI extends javax.swing.JFrame {
                                 }
                             }
 
-                            borrowedCount++;
+                            ++borrowedCount;
                             Database_Connectivity.updateUserBorrowedCount(borrowedCount, userID);
                             Database_Connectivity.updateBookAvailability(bookID, false);
 
@@ -996,7 +1011,7 @@ public class Operations_GUI extends javax.swing.JFrame {
                 if (isDateValid(borrowedDate) && isDateValid(returnedDate)) {
                     try {
                         if (Database_Connectivity.isCurrentlyBorrowed(userID, bookID)) {
-                            Database_Connectivity.insertReturnRecord(userID, bookID, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge);
+                            Database_Connectivity.insertReturnRecord(userID, name, bookID, title, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge);
                             returnList.add(new Return_Record(userID, name, bookID, title, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge));
 
                             model2.insertRow(model2.getRowCount(), new Object[]{userID, name, bookID, title, daysBorrowed, totalCharge});
@@ -1008,7 +1023,10 @@ public class Operations_GUI extends javax.swing.JFrame {
                                 }
                             }
 
-                            borrowedCount--;
+                            if (borrowedCount > 0) {
+                                borrowedCount--;
+                            }
+                            
                             Database_Connectivity.updateUserBorrowedCount(borrowedCount, userID);
                             Database_Connectivity.updateBookAvailability(bookID, true);
 
@@ -1067,12 +1085,6 @@ public class Operations_GUI extends javax.swing.JFrame {
         printTitle(bookidStr);
 
         try {
-            if ((useridStr.isEmpty() || useridStr == null) && (bookidStr.isEmpty() || bookidStr == null)) {
-                retNameTF.setText("");
-                retTitleTF.setText("");
-                return;
-            }
-
             int userID = Integer.parseInt(useridStr);
             int bookID = Integer.parseInt(bookidStr);
 
@@ -1081,9 +1093,14 @@ public class Operations_GUI extends javax.swing.JFrame {
 
                 retBorrowDateTF.setText(borrowDate);
 
+            } else {
+                JOptionPane.showMessageDialog(null, "This user has not borrow this book!");
             }
         } catch (SQLException s) {
             JOptionPane.showMessageDialog(null, "This user has not borrow this book!" + s.getMessage());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please make sure you have entered correct value.");
+
         }
     }//GEN-LAST:event_retBookidTFFocusLost
 
@@ -1100,7 +1117,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         String userID = borUseridTF.getText();
         printName(userID);
 
-        if (userID == null || userID.isEmpty()) {
+        if (userID == null || userID.trim().isEmpty()) {
             borNameTF.setText("");
         }
     }//GEN-LAST:event_borUseridTFFocusLost
@@ -1122,7 +1139,7 @@ public class Operations_GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please enter a value.");
         }
 
-        if (bookID == null || bookID.isEmpty()) {
+        if (bookID == null || bookID.trim().isEmpty()) {
             borTitleTF.setText("");
         }
     }//GEN-LAST:event_borBookidTFFocusLost
@@ -1191,7 +1208,10 @@ public class Operations_GUI extends javax.swing.JFrame {
             String borrowedDate = retBorrowDateTF.getText();
             String returnedDate = retReturnDateTF.getText();
 
-
+            if (!isDateValid(borrowedDate) && !isDateValid(returnedDate)) {
+                JOptionPane.showMessageDialog(null, "Please enter date in this format YYYY-MM-DD.");
+                return;
+            }
             // Parse the dates
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate borrowDate = LocalDate.parse(borrowedDate, formatter);
@@ -1202,29 +1222,41 @@ public class Operations_GUI extends javax.swing.JFrame {
 
             // Update the daysBorrowed field in the UI
             retDayBorrowTF.setText(String.valueOf(daysBorrowed));
-            
+
             final double DAILY_LATE_CHARGE = 2;
             double borrowingCharge = 7;
             double lateFee = 0;
             double totalCharge = 0;
-            
+
             if (daysBorrowed > 7) {
                 lateFee = DAILY_LATE_CHARGE * (daysBorrowed - 7);
-                
+
             }
             totalCharge = borrowingCharge + lateFee;
             retBorrowChargeTF.setText(String.valueOf(borrowingCharge));
             retLateFeeTF.setText(String.valueOf(lateFee));
             retTotalChargeTF.setText(String.valueOf(totalCharge));
-            
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Please make sure you have input the correct value.");
+        } catch (DateTimeParseException pe) {
+            JOptionPane.showMessageDialog(null, "Please enter date as YYYY-MM-DD.");
+
         }
     }//GEN-LAST:event_retReturnDateTFFocusLost
 
     private void retTotalChargeTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retTotalChargeTFActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_retTotalChargeTFActionPerformed
+
+    private void tabbedPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabbedPaneMouseClicked
+        // TODO add your handling code here:
+        resetAllField();
+    }//GEN-LAST:event_tabbedPaneMouseClicked
+
+    private void retBookidTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retBookidTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_retBookidTFActionPerformed
 
     /**
      * @param args the command line arguments

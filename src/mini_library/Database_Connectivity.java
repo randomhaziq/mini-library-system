@@ -37,9 +37,9 @@ public class Database_Connectivity {
     }
 
     //METHODS FOR RETURN
-    public static ArrayList<Return_Record> displayAllRecordReturn(String name, String title) throws SQLException {
+    public static ArrayList<Return_Record> displayAllRecordReturn() throws SQLException {
         Connection connection = databaseConnect();
-        String sql = "SELECT *  FROM return_record "; 
+        String sql = "SELECT *  FROM return_record ";
         PreparedStatement statement = connection.prepareStatement(sql);
 
         ResultSet resultSet = statement.executeQuery();
@@ -48,7 +48,9 @@ public class Database_Connectivity {
         // Iterate through the result set and create User objects
         while (resultSet.next()) {
             int userID = resultSet.getInt("userID");
+            String name = resultSet.getString("name");
             int bookID = resultSet.getInt("bookID");
+            String title = resultSet.getString("title");
             String borrowedDate = resultSet.getString("borrowedDate");
             String returnedDate = resultSet.getString("returnedDate");
             int daysBorrowed = resultSet.getInt("daysBorrowed");
@@ -66,7 +68,7 @@ public class Database_Connectivity {
 
         return returnList;
     }
-    
+
     public static boolean isCurrentlyBorrowed(int userID, int bookID) throws SQLException {
         Connection connection = databaseConnect();
         String sql = "SELECT COUNT(*) FROM borrow_record WHERE userID = ? AND bookID = ?";
@@ -81,23 +83,29 @@ public class Database_Connectivity {
             return count > 0; // Return true if the user has borrowed the book
         }
 
+        resultSet.close();
+        statement.close();
+        connection.close();
+        
         return false; // Return false if no record is found
     }
 
-    public static void insertReturnRecord(int userID, int bookID, String borrowDate, String returnDate, int daysBorrowed, double borrowingCharge, double lateFee, double totalCharge) throws SQLException {
+    public static void insertReturnRecord(int userID, String name, int bookID, String title, String borrowDate, String returnDate, int daysBorrowed, double borrowingCharge, double lateFee, double totalCharge) throws SQLException {
         // Query to insert a new return record
-        String sql = "INSERT INTO return_record (userID, bookID, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO return_record (userID, name, bookID, title, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection connection = databaseConnect();
 
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, userID);
-        statement.setInt(2, bookID);
-        statement.setString(3, borrowDate);
-        statement.setString(4, returnDate);
-        statement.setInt(5, daysBorrowed);
-        statement.setDouble(6, borrowingCharge);
-        statement.setDouble(7, lateFee);
-        statement.setDouble(8, totalCharge);
+        statement.setString(2, name);
+        statement.setInt(3, bookID);
+        statement.setString(4, title);
+        statement.setString(5, borrowDate);
+        statement.setString(6, returnDate);
+        statement.setInt(7, daysBorrowed);
+        statement.setDouble(8, borrowingCharge);
+        statement.setDouble(9, lateFee);
+        statement.setDouble(10, totalCharge);
         statement.executeUpdate();
 
         statement.close();
@@ -139,12 +147,16 @@ public class Database_Connectivity {
             return resultSet.getInt("BorrowedCount");
         }
 
+        resultSet.close();
+        statement.close();
+        connection.close();
+        
         return 0;
     }
 
-    public static ArrayList<Borrow_Record> displayAllRecordBorrow(String name, String title) throws SQLException {
+    public static ArrayList<Borrow_Record> displayAllRecordBorrow() throws SQLException {
         Connection connection = databaseConnect();
-        String sql = "SELECT *  FROM Borrow_record "; 
+        String sql = "SELECT *  FROM Borrow_record ";
         PreparedStatement statement = connection.prepareStatement(sql);
 
         ResultSet resultSet = statement.executeQuery();
@@ -153,7 +165,9 @@ public class Database_Connectivity {
         // Iterate through the result set and create User objects
         while (resultSet.next()) {
             int userID = resultSet.getInt("userID");
+            String name = resultSet.getString("name");
             int bookID = resultSet.getInt("bookID");
+            String title = resultSet.getString("title");
             boolean isAvailable = resultSet.getBoolean("isAvailable");
             String borrowedDate = resultSet.getString("borrowedDate");
             String dueDate = resultSet.getString("dueDate");
@@ -170,19 +184,22 @@ public class Database_Connectivity {
 
         return borrowList;
     }
-    public static void insertBorrowRecord(int userID, int bookID, boolean isAvailable, String borrowDate, String dueDate, double dailyCharge, double totalCharge) throws SQLException {
+
+    public static void insertBorrowRecord(int userID, String name, int bookID, String title, boolean isAvailable, String borrowDate, String dueDate, double dailyCharge, double totalCharge) throws SQLException {
         // Query to insert a new borrowing record
-        String sql = "INSERT INTO borrow_record (userID, bookID, isAvailable, borrowedDate, dueDate, dailyCharge, totalCharge) VALUES (?, ?, ?, ?, ?, ?, ?)";
         Connection connection = databaseConnect();
+        String sql = "INSERT INTO borrow_record (userID, name, bookID, title, isAvailable, borrowedDate, dueDate, dailyCharge, totalCharge) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, userID);
-        statement.setInt(2, bookID);
-        statement.setBoolean(3, isAvailable);
-        statement.setString(4, borrowDate);
-        statement.setString(5, dueDate);
-        statement.setDouble(6, dailyCharge);
-        statement.setDouble(7, totalCharge);
+        statement.setString(2, name);
+        statement.setInt(3, bookID);
+        statement.setString(4, title);
+        statement.setBoolean(5, isAvailable);
+        statement.setString(6, borrowDate);
+        statement.setString(7, dueDate);
+        statement.setDouble(8, dailyCharge);
+        statement.setDouble(9, totalCharge);
         statement.executeUpdate();
 
         statement.close();
@@ -216,6 +233,11 @@ public class Database_Connectivity {
         if (resultSet.next()) {
             return resultSet.getString("borrowedDate");
         }
+        
+        resultSet.close();
+        statement.close();
+        connection.close();
+        
         return null;
     }
 

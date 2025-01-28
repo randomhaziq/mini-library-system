@@ -440,28 +440,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 return;
             }
 
-//            Book book = new Book(bookID, title, author, publisher, category);
-//            try {
-//                Database_Connectivity.addRecordBook(book, genre_subject);
-//
-//                if (book.getCategory().equalsIgnoreCase("Fiction")) {
-//                    Fiction_Book fb = (Fiction_Book) book;
-//                    fb.setGenre(genre_subject);
-//
-//                } else {
-//                    Non_Fiction_Book nfb = (Non_Fiction_Book) book;
-//                    nfb.setSubject(genre_subject);
-//
-//                }
-//
-//                bookList.add(book);
-//                model.insertRow(model.getRowCount(), new Object[]{bookID, title, author, publisher, category, genre_subject});
-//                JOptionPane.showMessageDialog(null, "Book is added!");
-//                clearField();
-//
-//            } catch (SQLException e) {
-//                JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
-//            }
             if (category.equalsIgnoreCase("Fiction")) {
                 // Insert into the database
                 try {
@@ -479,7 +457,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 // Insert into the database
                 try {
                     Book book = new Book(bookID, title, author, publisher, category);
-//                    Non_Fiction_Book nfb = (Non_Fiction_Book) book;
                     Non_Fiction_Book nonFictionBook = new Non_Fiction_Book(bookID, title, author, publisher, category, genre_subject);
                     Database_Connectivity.addRecordBook(nonFictionBook, genre_subject);
                     bookList.add(nonFictionBook);
@@ -655,21 +632,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         }
         return foundBookList;
     }
-//    public Book searchBook(String searchToken) {
-//        for (Book book : bookList) {
-//            if (book.getAuthor().equalsIgnoreCase(searchToken) || book.getTitle().contains(searchToken)) {
-//                if (book instanceof Fiction_Book) {
-//                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Fiction_Book) book).getGenre()});
-//
-//                } else if (book instanceof Non_Fiction_Book) {
-//                    model.addRow(new Object[]{book.getBookID(), book.getTitle(), book.getAuthor(), book.getPublisher(), book.getCategory(), ((Non_Fiction_Book) book).getSubject()});
-//
-//                }
-//                return book;
-//            }
-//        }
-//        return null;
-//    }
 
     private void categoryCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryCBActionPerformed
         // TODO add your handling code here:
@@ -732,37 +694,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error searching for books: " + e.getMessage());
         }
-//        if (choice == JOptionPane.YES_OPTION) {
-//            String searchAuthor = JOptionPane.showInputDialog("Enter the Author's Name to be searched.");
-//            Predicate<Book> authorName = book -> book.getAuthor().equalsIgnoreCase(searchAuthor);
-//            resultList = searchBy(bookList, authorName);
-//        } else {
-//            String searchKeyword = JOptionPane.showInputDialog("Enter the Book Title's Keyword to be searched.");
-//            Predicate<Book> keyword = book -> book.getTitle().toLowerCase().contains(searchKeyword.toLowerCase());
-//            resultList = searchBy(bookList, keyword);
-//        }
-//
-//        if (!resultList.isEmpty()) {
-//            displayAllBook(resultList);
-//        }
-
-//delete
-//        String title = titleTF.getText();
-//        String author = authorTF.getText();
-//
-//        if (title.isEmpty() && author.isEmpty()) {
-//            JOptionPane.showMessageDialog(searchBtn, "Enter the name of author or keyword of the title to be searched.");
-//            return;
-//        }
-//
-//        //check if either field is filled before proceed to search
-//        if (searchBook(title) != null || searchBook(author) != null) {
-//            JOptionPane.showMessageDialog(null, "Book is found.");
-//
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Book is not found.");
-//        }
-
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
@@ -921,7 +852,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                     }
 
                     // Show success message
-                    JOptionPane.showMessageDialog(null, "User deleted successfully!");
+                    JOptionPane.showMessageDialog(null, "Book deleted successfully!");
 
                     // Clear all fields
                     clearField();
@@ -946,6 +877,10 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         String attribute = JOptionPane.showInputDialog(null, "Which attributes do you want to sort based on?"
                 + "\nPlease type only one of this (id/ title/ author/ publisher/ category/ type)");
 
+        if (attribute.trim().isEmpty() || attribute == null) {
+            return;
+        }
+        
         switch (attribute) {
             case "id":
                 comp = (b1, b2) -> b1.getBookID() - b2.getBookID();
@@ -1001,7 +936,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 Fiction_Book fb = (Fiction_Book) sortedBook;
                 model.addRow(new Object[]{sortedBook.getBookID(), sortedBook.getTitle(), sortedBook.getAuthor(), sortedBook.getPublisher(), sortedBook.getCategory(), fb.getGenre()});
 
-            } else if (sortedBook instanceof Non_Fiction_Book && sortedBook.getCategory().equalsIgnoreCase("Non_fiction")) {
+            } else if (sortedBook instanceof Non_Fiction_Book && sortedBook.getCategory().equalsIgnoreCase("Non-fiction")) {
                 Non_Fiction_Book nfb = (Non_Fiction_Book) sortedBook;
                 model.addRow(new Object[]{sortedBook.getBookID(), sortedBook.getTitle(), sortedBook.getAuthor(), sortedBook.getPublisher(), sortedBook.getCategory(), nfb.getSubject()});
 

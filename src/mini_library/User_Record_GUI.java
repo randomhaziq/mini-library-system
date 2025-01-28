@@ -13,7 +13,6 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Asus
  */
-
 public class User_Record_GUI extends javax.swing.JFrame {
 
     /**
@@ -386,15 +385,6 @@ public class User_Record_GUI extends javax.swing.JFrame {
         return false;
     }
 
-//    public User searchUser(String searchToken) {
-//        for (User user : userList) {
-//            if (user.getUserID() == Integer.parseInt(searchToken) || user.getName().equals(searchToken)) {
-//                model.addRow(new Object[]{user.getUserID(), user.getName(), user.getGender(), user.getPhoneNumber(), user.getEmail()});
-//            }
-//            return user;
-//        }
-//        return null;
-//    }
     public User searchBy(Tester t) {
         for (User user : userList) {
             if (t.test(user)) {
@@ -540,7 +530,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
                     }
                 }
 
-        }else if (choice == JOptionPane.NO_OPTION) {
+            } else if (choice == JOptionPane.NO_OPTION) {
                 model.setRowCount(0);
                 String name = JOptionPane.showInputDialog(null, "Enter name to be searched.");
 
@@ -567,28 +557,13 @@ public class User_Record_GUI extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "User is not found.");
 
                 }
-        }else {
+            } else {
                 return;
             }
-    }
-    catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Make sure you entered the correct input.");
-        return;
-    }
-
-//        String useridStr = useridTF.getText();
-//        String name = nameTF.getText();
-//
-//        if (useridStr.isEmpty() && name.isEmpty()) {
-//            JOptionPane.showMessageDialog(null, "Please enter the User ID or name to be searched!");
-//            return;
-//        }
-//
-//        if (searchUser(useridStr) != null || searchUser(name) != null) {
-//            JOptionPane.showMessageDialog(null, "User is found!");
-//        } else {
-//            JOptionPane.showMessageDialog(null, "User is not found!");
-//        }
+            return;
+        }
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void displayAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayAllBtnActionPerformed
@@ -766,36 +741,36 @@ public class User_Record_GUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-    } catch (ClassNotFoundException ex) {
-        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(User_Record_GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
+        //</editor-fold>
 
-    /* Create and display the form */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            new User_Record_GUI().setVisible(true);
-        }
-    });
-}
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new User_Record_GUI().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup;
