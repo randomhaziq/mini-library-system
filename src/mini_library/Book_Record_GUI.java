@@ -6,6 +6,7 @@ package mini_library;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -19,7 +20,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     /**
      * Creates new form Book_Record_GUI
      */
-    ArrayList<Book> bookList = new ArrayList<>();
+    static ArrayList<Book> bookList = new ArrayList<>();
     DefaultTableModel model;
     String url = "jdbc:mysql://localhost:3306/librarydb";
     String username = "root";
@@ -29,6 +30,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setTitle("Book Record");
         model = (DefaultTableModel) table.getModel();
         displayAllBook();
     }
@@ -68,39 +70,39 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        sortBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 255));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Bodoni MT Black", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("BOOK RECORD");
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 153));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Book ID");
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Title");
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Author");
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Publisher");
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Category");
 
-        genreLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        genreLabel.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         genreLabel.setForeground(new java.awt.Color(255, 255, 255));
         genreLabel.setText("Genre");
 
@@ -119,7 +121,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
         genreTF.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
-        categoryCB.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        categoryCB.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
         categoryCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Choose Category", "Fiction", "Non-fiction" }));
         categoryCB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -133,7 +135,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -152,8 +154,8 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(genreLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(genreTF)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(genreTF, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(27, 27, 27))
         );
         jPanel2Layout.setVerticalGroup(
@@ -183,12 +185,14 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(genreLabel)
                     .addComponent(genreTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         jPanel3.setBackground(new java.awt.Color(102, 102, 255));
 
-        insertBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        insertBtn.setBackground(new java.awt.Color(0, 204, 51));
+        insertBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        insertBtn.setForeground(new java.awt.Color(0, 0, 0));
         insertBtn.setText("INSERT");
         insertBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -196,7 +200,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        updateBtn.setBackground(new java.awt.Color(255, 255, 51));
+        updateBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        updateBtn.setForeground(new java.awt.Color(0, 0, 0));
         updateBtn.setText("UPDATE");
         updateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -204,7 +210,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        searchBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        searchBtn.setBackground(new java.awt.Color(51, 51, 255));
+        searchBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        searchBtn.setForeground(new java.awt.Color(0, 0, 0));
         searchBtn.setText("SEARCH");
         searchBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -213,7 +221,8 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         });
 
         deleteBtn.setBackground(new java.awt.Color(255, 0, 0));
-        deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        deleteBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        deleteBtn.setForeground(new java.awt.Color(0, 0, 0));
         deleteBtn.setText("DELETE");
         deleteBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -221,7 +230,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        displayAllBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        displayAllBtn.setBackground(new java.awt.Color(255, 102, 51));
+        displayAllBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        displayAllBtn.setForeground(new java.awt.Color(0, 0, 0));
         displayAllBtn.setText("DISPLAY ALL");
         displayAllBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -229,7 +240,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        resetBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        resetBtn.setBackground(new java.awt.Color(255, 0, 255));
+        resetBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        resetBtn.setForeground(new java.awt.Color(0, 0, 0));
         resetBtn.setText("RESET");
         resetBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -275,7 +288,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Book ID", "Title", "Author", "Publisher", "Category", "Genre"
+                "Book ID", "Title", "Author", "Publisher", "Category", "Type"
             }
         ));
         table.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -302,7 +315,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 .addGap(70, 70, 70))
         );
 
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jButton1.setBackground(new java.awt.Color(0, 153, 153));
+        jButton1.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(0, 0, 0));
         jButton1.setText("BACK");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -310,8 +325,15 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton2.setText("SORT");
+        sortBtn.setBackground(new java.awt.Color(0, 153, 153));
+        sortBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        sortBtn.setForeground(new java.awt.Color(0, 0, 0));
+        sortBtn.setText("SORT");
+        sortBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -328,7 +350,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2)
+                        .addComponent(sortBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1))
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -341,13 +363,13 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(sortBtn))
                 .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 372, Short.MAX_VALUE))
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addContainerGap(95, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -370,6 +392,9 @@ public class Book_Record_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public static ArrayList<Book> getBookList() {
+        return bookList;
+    }
     private void bookidTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bookidTFActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_bookidTFActionPerformed
@@ -415,40 +440,57 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                 return;
             }
 
-            // Insert into the database
-            String query = "INSERT INTO Books (BookID, Title, Author, Publisher, Category, Genre, Subject) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            try {
-
-                Connection connection = DriverManager.getConnection(url, username, password);
-                PreparedStatement stmt = connection.prepareStatement(query);
-
-                stmt.setInt(1, bookID);
-                stmt.setString(2, title);
-                stmt.setString(3, author);
-                stmt.setString(4, publisher);
-                stmt.setString(5, category);
-                stmt.setString(6, category.equals("Fiction") ? genre_subject : null);
-                stmt.setString(7, category.equals("Non-fiction") ? genre_subject : null);
-                stmt.executeUpdate();
-
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
-                return;
-            }
-
+//            Book book = new Book(bookID, title, author, publisher, category);
+//            try {
+//                Database_Connectivity.addRecordBook(book, genre_subject);
+//
+//                if (book.getCategory().equalsIgnoreCase("Fiction")) {
+//                    Fiction_Book fb = (Fiction_Book) book;
+//                    fb.setGenre(genre_subject);
+//
+//                } else {
+//                    Non_Fiction_Book nfb = (Non_Fiction_Book) book;
+//                    nfb.setSubject(genre_subject);
+//
+//                }
+//
+//                bookList.add(book);
+//                model.insertRow(model.getRowCount(), new Object[]{bookID, title, author, publisher, category, genre_subject});
+//                JOptionPane.showMessageDialog(null, "Book is added!");
+//                clearField();
+//
+//            } catch (SQLException e) {
+//                JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+//            }
             if (category.equalsIgnoreCase("Fiction")) {
-                Fiction_Book fictionBook = new Fiction_Book(bookID, title, author, publisher, category, genre_subject);
-                bookList.add(fictionBook);
+                // Insert into the database
+                try {
+                    Fiction_Book fictionBook = new Fiction_Book(bookID, title, author, publisher, category, genre_subject);
+                    Database_Connectivity.addRecordBook(fictionBook, genre_subject);
+                    bookList.add(fictionBook);
 
-            } else if (category.equalsIgnoreCase("Non-fiction")) {
-                Non_Fiction_Book nonFictionBook = new Non_Fiction_Book(bookID, title, author, publisher, category, genre_subject);
-                bookList.add(nonFictionBook);
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "Failed to insert book data into the database for Fiction.");
+                    JOptionPane.showMessageDialog(null, "SQL Error: " + e.getMessage());
+
+                }
 
             } else {
-                JOptionPane.showMessageDialog(null, "System error!");
-                return;
-            }
+                // Insert into the database
+                try {
+                    Book book = new Book(bookID, title, author, publisher, category);
+//                    Non_Fiction_Book nfb = (Non_Fiction_Book) book;
+                    Non_Fiction_Book nonFictionBook = new Non_Fiction_Book(bookID, title, author, publisher, category, genre_subject);
+                    Database_Connectivity.addRecordBook(nonFictionBook, genre_subject);
+                    bookList.add(nonFictionBook);
 
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "Failed to insert book data into the database for Non-Fiction.");
+                    JOptionPane.showMessageDialog(null, "SQL Error: " + e.getMessage());
+
+                }
+
+            }
             model.insertRow(model.getRowCount(), new Object[]{bookID, title, author, publisher, category, genre_subject});
             JOptionPane.showMessageDialog(null, "Book is added!");
             clearField();
@@ -761,22 +803,32 @@ public class Book_Record_GUI extends javax.swing.JFrame {
                     b.setPublisher(publisher);
                     b.setCategory(category);
 
-                    if (b instanceof Fiction_Book && b.getCategory().equalsIgnoreCase("Fiction")) {
-                        Fiction_Book fictionBook = (Fiction_Book) b;
-                        fictionBook.setGenre(genre_subject);
+                    try {
+                        Database_Connectivity.editRecordBook(b, genre_subject);
 
-                        model.addRow(new Object[]{b.getBookID(), b.getTitle(), b.getAuthor(), b.getPublisher(), b.getCategory(), fictionBook.getGenre()});
+                        if (b instanceof Fiction_Book && b.getCategory().equalsIgnoreCase("Fiction")) {
+                            Fiction_Book fictionBook = (Fiction_Book) b;
+                            fictionBook.setGenre(genre_subject);
 
-                    } else if (b instanceof Non_Fiction_Book && b.getCategory().equalsIgnoreCase("Non-fiction")) {
-                        ((Non_Fiction_Book) b).setSubject(genre_subject);
-                        Non_Fiction_Book nonFictionBook = (Non_Fiction_Book) b;
+                            model.addRow(new Object[]{b.getBookID(), b.getTitle(), b.getAuthor(), b.getPublisher(), b.getCategory(), fictionBook.getGenre()});
 
-                        model.addRow(new Object[]{b.getBookID(), b.getTitle(), b.getAuthor(), b.getPublisher(), b.getCategory(), nonFictionBook.getSubject()});
+                        } else if (b instanceof Non_Fiction_Book && b.getCategory().equalsIgnoreCase("Non-fiction")) {
+                            ((Non_Fiction_Book) b).setSubject(genre_subject);
+                            Non_Fiction_Book nonFictionBook = (Non_Fiction_Book) b;
+
+                            model.addRow(new Object[]{b.getBookID(), b.getTitle(), b.getAuthor(), b.getPublisher(), b.getCategory(), nonFictionBook.getSubject()});
+                        }
+
+                        JOptionPane.showMessageDialog(null, "Update is successful.");
+
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, "Error when updating book information in the database.");
+                        e.printStackTrace(); // Print the stack trace to the console
+                        JOptionPane.showMessageDialog(null, "SQL Error: " + e.getMessage());
                     }
                     break;
                 }
             }
-            JOptionPane.showMessageDialog(null, "Update is successful.");
 
         } else {
             JOptionPane.showMessageDialog(null, "No changes is made.");
@@ -886,11 +938,77 @@ public class Book_Record_GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Deletion is cancelled. No item is deleted.");
             return;
         }
-
-//        displayAllBook();
-//        clearField();
-
     }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void sortBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortBtnActionPerformed
+        // TODO add your handling code here:
+        Comparator<Book> comp = null;
+        String attribute = JOptionPane.showInputDialog(null, "Which attributes do you want to sort based on?"
+                + "\nPlease type only one of this (id/ title/ author/ publisher/ category/ type)");
+
+        switch (attribute) {
+            case "id":
+                comp = (b1, b2) -> b1.getBookID() - b2.getBookID();
+                break;
+            case "title":
+                comp = (b1, b2) -> b1.getTitle().compareToIgnoreCase(b2.getTitle());
+                break;
+            case "author":
+                comp = (b1, b2) -> b1.getAuthor().compareToIgnoreCase(b2.getAuthor());
+                break;
+            case "publisher":
+                comp = (b1, b2) -> b1.getPublisher().compareToIgnoreCase(b2.getPublisher());
+                break;
+            case "category":
+                comp = (b1, b2) -> b1.getCategory().compareToIgnoreCase(b2.getCategory());
+                break;
+            case "type":
+                comp = (b1, b2) -> {
+                    // 4 types:
+                    // fiction, fiction, nonfiction, nonfiction
+                    // fiction, nonfiction, nonfiction fiction
+                    
+                    // For Fiction books, compare based on genres
+                    if (b1.getCategory().equalsIgnoreCase("Fiction") && b2.getCategory().equalsIgnoreCase("Fiction")) {
+                        Fiction_Book fb1 = (Fiction_Book) b1;
+                        Fiction_Book fb2 = (Fiction_Book) b2;
+                        return fb1.getGenre().compareToIgnoreCase(fb2.getGenre());
+                        
+                    } // For Non-fiction books, compare subjects
+                    else if (b1.getCategory().equalsIgnoreCase("Non-fiction") && b2.getCategory().equalsIgnoreCase("Non-fiction")) {
+                        Non_Fiction_Book nfb1 = (Non_Fiction_Book) b1;
+                        Non_Fiction_Book nfb2 = (Non_Fiction_Book) b2;
+                        return nfb1.getSubject().compareToIgnoreCase(nfb2.getSubject());
+                        
+                    } // If one is Fiction and the other is Non-fiction, sort Fiction first
+                    else if (b1.getCategory().equalsIgnoreCase("Fiction")) {
+                        return -1; // Fiction comes before Non-fiction
+                    } else {
+                        return 1; // Non-fiction comes after Fiction
+                    }
+                };
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Invalid attribute. Sorting is cancelled.");
+                return;
+        }
+
+        bookList.sort(comp);
+
+        model.setRowCount(0);
+        for (Book sortedBook : bookList) {
+            if (sortedBook instanceof Fiction_Book && sortedBook.getCategory().equalsIgnoreCase("Fiction")) {
+                Fiction_Book fb = (Fiction_Book) sortedBook;
+                model.addRow(new Object[]{sortedBook.getBookID(), sortedBook.getTitle(), sortedBook.getAuthor(), sortedBook.getPublisher(), sortedBook.getCategory(), fb.getGenre()});
+
+            } else if (sortedBook instanceof Non_Fiction_Book && sortedBook.getCategory().equalsIgnoreCase("Non_fiction")) {
+                Non_Fiction_Book nfb = (Non_Fiction_Book) sortedBook;
+                model.addRow(new Object[]{sortedBook.getBookID(), sortedBook.getTitle(), sortedBook.getAuthor(), sortedBook.getPublisher(), sortedBook.getCategory(), nfb.getSubject()});
+
+            }
+        }
+        JOptionPane.showMessageDialog(null, "Sort successfully. Sorted based on " + attribute.toUpperCase());
+    }//GEN-LAST:event_sortBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -937,7 +1055,6 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     private javax.swing.JTextField genreTF;
     private javax.swing.JButton insertBtn;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -952,6 +1069,7 @@ public class Book_Record_GUI extends javax.swing.JFrame {
     private javax.swing.JTextField publisherTF;
     private javax.swing.JButton resetBtn;
     private javax.swing.JButton searchBtn;
+    private javax.swing.JButton sortBtn;
     private javax.swing.JTable table;
     private javax.swing.JTextField titleTF;
     private javax.swing.JButton updateBtn;

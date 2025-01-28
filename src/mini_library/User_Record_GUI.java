@@ -27,6 +27,7 @@ public class User_Record_GUI extends javax.swing.JFrame {
         model = (DefaultTableModel) table.getModel();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setTitle("User Record");
         displayAll();
     }
 
@@ -65,16 +66,18 @@ public class User_Record_GUI extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
-        sortBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 255));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Bodoni MT Black", 0, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("USER RECORD");
 
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jButton1.setBackground(new java.awt.Color(0, 153, 153));
+        jButton1.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(0, 0, 0));
         jButton1.setText("BACK");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -84,19 +87,24 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 153));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("User ID");
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Name");
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Gender");
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Phone No.");
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Email");
 
         useridTF.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -108,7 +116,8 @@ public class User_Record_GUI extends javax.swing.JFrame {
         emailTF.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
         buttonGroup.add(maleRB);
-        maleRB.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        maleRB.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        maleRB.setForeground(new java.awt.Color(255, 255, 255));
         maleRB.setText("Male");
         maleRB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -117,7 +126,8 @@ public class User_Record_GUI extends javax.swing.JFrame {
         });
 
         buttonGroup.add(femaleRB);
-        femaleRB.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        femaleRB.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        femaleRB.setForeground(new java.awt.Color(255, 255, 255));
         femaleRB.setText("Female");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -173,7 +183,9 @@ public class User_Record_GUI extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(102, 102, 255));
 
-        insertBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        insertBtn.setBackground(new java.awt.Color(0, 204, 51));
+        insertBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        insertBtn.setForeground(new java.awt.Color(0, 0, 0));
         insertBtn.setText("INSERT");
         insertBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -181,7 +193,9 @@ public class User_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        updateBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        updateBtn.setBackground(new java.awt.Color(255, 255, 51));
+        updateBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        updateBtn.setForeground(new java.awt.Color(0, 0, 0));
         updateBtn.setText("UPDATE");
         updateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -189,7 +203,9 @@ public class User_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        searchBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        searchBtn.setBackground(new java.awt.Color(0, 51, 255));
+        searchBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        searchBtn.setForeground(new java.awt.Color(0, 0, 0));
         searchBtn.setText("SEARCH");
         searchBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -198,7 +214,8 @@ public class User_Record_GUI extends javax.swing.JFrame {
         });
 
         deleteBtn.setBackground(new java.awt.Color(255, 0, 51));
-        deleteBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        deleteBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        deleteBtn.setForeground(new java.awt.Color(0, 0, 0));
         deleteBtn.setText("DELETE");
         deleteBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -206,7 +223,9 @@ public class User_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        displayAllBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        displayAllBtn.setBackground(new java.awt.Color(255, 102, 0));
+        displayAllBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        displayAllBtn.setForeground(new java.awt.Color(0, 0, 0));
         displayAllBtn.setText("DISPLAY ALL");
         displayAllBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -214,7 +233,9 @@ public class User_Record_GUI extends javax.swing.JFrame {
             }
         });
 
-        resetBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        resetBtn.setBackground(new java.awt.Color(204, 0, 204));
+        resetBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        resetBtn.setForeground(new java.awt.Color(0, 0, 0));
         resetBtn.setText("RESET");
         resetBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -286,32 +307,20 @@ public class User_Record_GUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        sortBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        sortBtn.setText("SORT");
-        sortBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sortBtnActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(sortBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
@@ -321,14 +330,13 @@ public class User_Record_GUI extends javax.swing.JFrame {
                 .addGap(33, 33, 33)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jLabel1)
-                    .addComponent(sortBtn))
+                    .addComponent(jLabel1))
                 .addGap(44, 44, 44)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(81, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -406,7 +414,6 @@ public class User_Record_GUI extends javax.swing.JFrame {
             ArrayList<User> usersFromDB = Database_Connectivity.displayAllRecordUser();
 
             if (usersFromDB.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "There is nothing to display.");
                 return;
             }
 
@@ -755,10 +762,6 @@ public class User_Record_GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tableMouseClicked
 
-    private void sortBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortBtnActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_sortBtnActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -818,7 +821,6 @@ public class User_Record_GUI extends javax.swing.JFrame {
     private javax.swing.JTextField phoneNoTF;
     private javax.swing.JButton resetBtn;
     private javax.swing.JButton searchBtn;
-    private javax.swing.JButton sortBtn;
     private javax.swing.JTable table;
     private javax.swing.JButton updateBtn;
     private javax.swing.JTextField useridTF;

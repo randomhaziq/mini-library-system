@@ -36,12 +36,207 @@ public class Database_Connectivity {
         return connect;
     }
 
+    //METHODS FOR RETURN
+    public static ArrayList<Return_Record> displayAllRecordReturn(String name, String title) throws SQLException {
+        Connection connection = databaseConnect();
+        String sql = "SELECT *  FROM return_record "; 
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        ResultSet resultSet = statement.executeQuery();
+        ArrayList<Return_Record> returnList = new ArrayList<>();
+
+        // Iterate through the result set and create User objects
+        while (resultSet.next()) {
+            int userID = resultSet.getInt("userID");
+            int bookID = resultSet.getInt("bookID");
+            String borrowedDate = resultSet.getString("borrowedDate");
+            String returnedDate = resultSet.getString("returnedDate");
+            int daysBorrowed = resultSet.getInt("daysBorrowed");
+            double borrowingCharge = resultSet.getDouble("borrowingCharge");
+            double lateFee = resultSet.getDouble("lateFee");
+            double totalCharge = resultSet.getDouble("totalCharge");
+
+            returnList.add(new Return_Record(userID, name, bookID, title, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge));
+        }
+
+        // Close resources
+        resultSet.close();
+        statement.close();
+        connection.close();
+
+        return returnList;
+    }
+    
+    public static boolean isCurrentlyBorrowed(int userID, int bookID) throws SQLException {
+        Connection connection = databaseConnect();
+        String sql = "SELECT COUNT(*) FROM borrow_record WHERE userID = ? AND bookID = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        statement.setInt(1, userID);
+        statement.setInt(2, bookID);
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            int count = resultSet.getInt(1);
+            return count > 0; // Return true if the user has borrowed the book
+        }
+
+        return false; // Return false if no record is found
+    }
+
+    public static void insertReturnRecord(int userID, int bookID, String borrowDate, String returnDate, int daysBorrowed, double borrowingCharge, double lateFee, double totalCharge) throws SQLException {
+        // Query to insert a new return record
+        String sql = "INSERT INTO return_record (userID, bookID, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        Connection connection = databaseConnect();
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setInt(1, userID);
+        statement.setInt(2, bookID);
+        statement.setString(3, borrowDate);
+        statement.setString(4, returnDate);
+        statement.setInt(5, daysBorrowed);
+        statement.setDouble(6, borrowingCharge);
+        statement.setDouble(7, lateFee);
+        statement.setDouble(8, totalCharge);
+        statement.executeUpdate();
+
+        statement.close();
+        connection.close();
+    }
+
+    //METHODS FOR BORROW
+    public static boolean isEligibleToBorrow(int userID, int bookID) throws SQLException {
+        // Check if the book is available
+        Predicate<Book> checkBook = book -> book.getBookID() == bookID && book.isAvailable();
+        ArrayList<Book> bookList = Database_Connectivity.searchBy(checkBook);
+
+        if (bookList.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "The book is not available.");
+            return false;
+        }
+
+        // Check if the user has exceeded the borrowing limit (e.g., 5 books)
+        int borrowedCount = Database_Connectivity.getBorrowedCount(userID);
+        if (borrowedCount >= 5) {
+            JOptionPane.showMessageDialog(null, "You have exceeded the borrowing limit.");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static int getBorrowedCount(int userID) throws SQLException {
+        // Query to get the number of books borrowed by the user
+        Connection connection = databaseConnect();
+        String sql = "SELECT borrowedCount FROM users WHERE userID = ?";
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        statement.setInt(1, userID);
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getInt("BorrowedCount");
+        }
+
+        return 0;
+    }
+
+    public static ArrayList<Borrow_Record> displayAllRecordBorrow(String name, String title) throws SQLException {
+        Connection connection = databaseConnect();
+        String sql = "SELECT *  FROM Borrow_record "; 
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        ResultSet resultSet = statement.executeQuery();
+        ArrayList<Borrow_Record> borrowList = new ArrayList<>();
+
+        // Iterate through the result set and create User objects
+        while (resultSet.next()) {
+            int userID = resultSet.getInt("userID");
+            int bookID = resultSet.getInt("bookID");
+            boolean isAvailable = resultSet.getBoolean("isAvailable");
+            String borrowedDate = resultSet.getString("borrowedDate");
+            String dueDate = resultSet.getString("dueDate");
+            double dailyCharge = resultSet.getDouble("dailyCharge");
+            double totalCharge = resultSet.getDouble("totalCharge");
+
+            borrowList.add(new Borrow_Record(userID, name, bookID, title, isAvailable, borrowedDate, dueDate, dailyCharge, totalCharge));
+        }
+
+        // Close resources
+        resultSet.close();
+        statement.close();
+        connection.close();
+
+        return borrowList;
+    }
+    public static void insertBorrowRecord(int userID, int bookID, boolean isAvailable, String borrowDate, String dueDate, double dailyCharge, double totalCharge) throws SQLException {
+        // Query to insert a new borrowing record
+        String sql = "INSERT INTO borrow_record (userID, bookID, isAvailable, borrowedDate, dueDate, dailyCharge, totalCharge) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        Connection connection = databaseConnect();
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setInt(1, userID);
+        statement.setInt(2, bookID);
+        statement.setBoolean(3, isAvailable);
+        statement.setString(4, borrowDate);
+        statement.setString(5, dueDate);
+        statement.setDouble(6, dailyCharge);
+        statement.setDouble(7, totalCharge);
+        statement.executeUpdate();
+
+        statement.close();
+        connection.close();
+    }
+
+    public static void updateUserBorrowedCount(int borrowCount, int userID) throws SQLException {
+        String sql = "Update users set borrowedCount = ? Where userID = ?";
+        Connection connection = databaseConnect();
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setInt(1, borrowCount);
+        statement.setInt(2, userID);
+
+        statement.executeUpdate();
+
+        connection.close();
+        statement.close();
+    }
+
+    public static String getBorrowDate(int userID, int bookID) throws SQLException {
+        Connection connection = databaseConnect();
+        String sql = "SELECT borrowedDate FROM BORROW_RECORD WHERE userID = ? and bookID = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        statement.setInt(1, userID);
+        statement.setInt(2, bookID);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getString("borrowedDate");
+        }
+        return null;
+    }
+
+    public static void updateBookAvailability(int bookID, boolean isAvailable) throws SQLException {
+        // Query to update the book's availability status
+        Connection connection = databaseConnect();
+        String sql = "UPDATE books SET isAvailable = ? WHERE bookID = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        statement.setBoolean(1, isAvailable);
+        statement.setInt(2, bookID);
+        statement.executeUpdate();
+
+    }
+
     //METHODS FOR USER RECORDS
     //addrecord inside database
     public static void addRecordUser(User user) throws SQLException {
         Connection connection = databaseConnect();
 
-        String sql = "INSERT  INTO USERS(borrowerID, name, gender, phoneNumber, email) "
+        String sql = "INSERT  INTO USERS(userID, name, gender, phoneNumber, email) "
                 + "values (?,?,?,?,?)";
         PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -63,21 +258,21 @@ public class Database_Connectivity {
         Connection connection = databaseConnect();
         String sql = "UPDATE USERS "
                 + "SET name = ?, gender = ?, phoneNumber = ?, email = ?"
-                + "WHERE borrowerID = ?";
+                + "WHERE userID = ?";
 
-        PreparedStatement stmt = connection.prepareStatement(sql);
+        PreparedStatement statement = connection.prepareStatement(sql);
 
-        stmt.setString(1, user.getName());
-        stmt.setString(2, user.getGender());
-        stmt.setString(3, user.getPhoneNumber());
-        stmt.setString(4, user.getEmail());
-        stmt.setInt(5, user.getUserID());
+        statement.setString(1, user.getName());
+        statement.setString(2, user.getGender());
+        statement.setString(3, user.getPhoneNumber());
+        statement.setString(4, user.getEmail());
+        statement.setInt(5, user.getUserID());
 
-        int row = stmt.executeUpdate();
+        int row = statement.executeUpdate();
 
         System.out.println("Rows affected = " + row);
 
-        stmt.close();
+        statement.close();
         connection.close();
         return row;
     }
@@ -86,7 +281,7 @@ public class Database_Connectivity {
         Connection connection = databaseConnect();
 
         String sql = "SELECT * FROM USERS "
-                + "WHERE borrowerID = ? OR name = ?";
+                + "WHERE userID = ? OR name = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
 
         statement.setString(1, token);
@@ -96,7 +291,7 @@ public class Database_Connectivity {
         ArrayList<User> searchResults = new ArrayList<>();
 
         while (resultSet.next()) {
-            int userID = resultSet.getInt("borrowerID");
+            int userID = resultSet.getInt("userID");
             String name = resultSet.getString("name");
             String gender = resultSet.getString("gender");
             String phoneNo = resultSet.getString("phoneNumber");
@@ -122,7 +317,7 @@ public class Database_Connectivity {
 
         // Iterate through the result set and create User objects
         while (resultSet.next()) {
-            int userID = resultSet.getInt("borrowerID");
+            int userID = resultSet.getInt("userID");
             String name = resultSet.getString("name");
             String gender = resultSet.getString("gender");
             String phoneNo = resultSet.getString("phoneNumber");
@@ -141,12 +336,12 @@ public class Database_Connectivity {
 
     public static ArrayList<User> deleteRecordUser(int userID) throws SQLException {
         Connection connection = databaseConnect();
-        String sql = "DELETE FROM USERS WHERE borrowerID = ?";
-        PreparedStatement stmt = connection.prepareStatement(sql);
+        String sql = "DELETE FROM USERS WHERE userID = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
 
-        stmt.setInt(1, userID);
+        statement.setInt(1, userID);
 
-        int rowDeleted = stmt.executeUpdate();
+        int rowDeleted = statement.executeUpdate();
         if (rowDeleted > 0) {
             // Remove the user from the userList
             for (User user : userList) {
@@ -156,26 +351,16 @@ public class Database_Connectivity {
             }
         }
 
-        stmt.close();
+        statement.close();
         connection.close();
         return userList;
     }
 
     //METHODS FOR BOOK RECORDS
-    public static void addRecordBook(Book book) throws SQLException {
+    public static void addRecordBook(Book book, String genre_subject) throws SQLException {
         Connection connection = databaseConnect();
 
-        String sql = null;
-
-        if (book.getCategory().equalsIgnoreCase("Fiction")) {
-            sql = "INSERT INTO BOOKS(bookID, title, author, publisher, category, genre, subject, availability) "
-                    + "values (?, ?, ?, ?, ?, ?, 'Not Applicable', ?)";
-
-        } else {
-            sql = "INSERT INTO BOOKS(bookID, title, author, publisher, category, genre, subject, availability) "
-                    + "values (?, ?, ?, ?, ?, 'Not Applicable', ?, ?)";
-
-        }
+        String sql = "INSERT INTO Books (BookID, Title, Author, Publisher, Category, Genre, Subject) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -184,58 +369,44 @@ public class Database_Connectivity {
         statement.setString(3, book.getAuthor());
         statement.setString(4, book.getPublisher());
         statement.setString(5, book.getCategory());
-
-        if (book.getCategory().equalsIgnoreCase("Fiction")) {
-            Fiction_Book fb = (Fiction_Book) book;
-            statement.setString(6, fb.getGenre());
-
-        } else {
-            Non_Fiction_Book nfb = (Non_Fiction_Book) book;
-            statement.setString(7, nfb.getSubject());
-
-        }
+        statement.setString(6, book.getCategory().equals("Fiction") ? genre_subject : "NotApplicable");
+        statement.setString(7, book.getCategory().equals("Non-fiction") ? genre_subject : "NotApplicable");
 
         int count = statement.executeUpdate();
-        System.out.println("The number of inserted user = " + count);
+        System.out.println("The number of inserted book = " + count);
         statement.close();
         connection.close();
     }
 
     //edit database record
-    public static int editRecordBook(Book book) throws SQLException {
-
+    public static int editRecordBook(Book book, String genre_subject) throws SQLException {
         Connection connection = databaseConnect();
         String sql = "UPDATE BOOKS "
-                + "SET title = ?, author = ?, publisher= ?, category = ?, genre= ?, subject= ?, availability= ?"
-                + "WHERE bookID = ?";
+                + "SET Title = ?, Author = ?, Publisher= ?, Category = ?, Genre= ?, Subject= ?, isAvailable = ? "
+                + "WHERE BookID = ?";
 
-        PreparedStatement stmt = connection.prepareStatement(sql);
+        PreparedStatement statement = connection.prepareStatement(sql);
 
-        stmt.setString(1, book.getTitle());
-        stmt.setString(2, book.getAuthor());
-        stmt.setString(3, book.getPublisher());
-        stmt.setString(4, book.getCategory());
-        stmt.setBoolean(7, book.isAvailable());
-        stmt.setInt(8, book.getBookID());
+        statement.setString(1, book.getTitle());
+        statement.setString(2, book.getAuthor());
+        statement.setString(3, book.getPublisher());
+        statement.setString(4, book.getCategory());
+        if (book.getCategory().equalsIgnoreCase("Fiction")) {
+            statement.setString(5, genre_subject);
+            statement.setString(6, "Not Applicable");
 
-        if (book.getCategory() != null) {
-            if (book.getCategory().equalsIgnoreCase("Fiction")) {
-                Fiction_Book fb = (Fiction_Book) book;
-                stmt.setString(5, fb.getGenre());
-                stmt.setString(6, "Not Applicable");
-
-            } else {
-                Non_Fiction_Book nfb = (Non_Fiction_Book) book;
-                stmt.setString(5, "Not Applicable");
-                stmt.setString(6, nfb.getSubject());
-
-            }
+        } else {
+            statement.setString(5, "Not Applicable");
+            statement.setString(6, genre_subject);
         }
-        int row = stmt.executeUpdate();
+        statement.setBoolean(7, book.isAvailable());
+        statement.setInt(8, book.getBookID());
+
+        int row = statement.executeUpdate();
 
         System.out.println("Rows affected = " + row);
 
-        stmt.close();
+        statement.close();
         connection.close();
         return row;
     }
@@ -256,7 +427,7 @@ public class Database_Connectivity {
             String category = resultSet.getString("category");
             String genre = resultSet.getString("genre");
             String subject = resultSet.getString("subject");
-            boolean availability = resultSet.getBoolean("availability");
+            boolean availability = resultSet.getBoolean("isAvailable");
 
             // Create a Book object based on the category
             Book book;
@@ -265,6 +436,7 @@ public class Database_Connectivity {
             } else {
                 book = new Non_Fiction_Book(bookID, title, author, publisher, category, subject);
             }
+            book.setAvailable(availability);
 
             // Apply the condition (lambda function) to filter books
             if (searchToken.test(book)) {
@@ -277,34 +449,6 @@ public class Database_Connectivity {
         connection.close();
         return searchResults;
     }
-//    public static ArrayList<User> searchRecordBook(String token) throws SQLException {
-//        Connection connection = databaseConnect();
-//
-//        String sql = "SELECT * FROM BOOKS "
-//                + "WHERE borrowerID = ? OR name = ?";
-//        PreparedStatement statement = connection.prepareStatement(sql);
-//
-//        statement.setString(1, token);
-//        statement.setString(2, token);
-//
-//        ResultSet resultSet = statement.executeQuery();
-//        ArrayList<User> searchResults = new ArrayList<>();
-//
-//        while (resultSet.next()) {
-//            int userID = resultSet.getInt("borrowerID");
-//            String name = resultSet.getString("name");
-//            String gender = resultSet.getString("gender");
-//            String phoneNo = resultSet.getString("phoneNumber");
-//            String email = resultSet.getString("email");
-//
-//            searchResults.add(new User(userID, name, gender, phoneNo, email));
-//        }
-//
-//        resultSet.close();
-//        statement.close();
-//        connection.close();
-//        return searchResults;
-//    }
 
     //function button for display all information
     public static ArrayList<Book> displayAllRecordBook() throws SQLException {
@@ -324,7 +468,7 @@ public class Database_Connectivity {
             String category = resultSet.getString("category");
             String genre = resultSet.getString("genre");
             String subject = resultSet.getString("subject");
-            boolean availability = resultSet.getBoolean("availability");
+            boolean availability = resultSet.getBoolean("isAvailable");
 
             Book book;
             if (category.equalsIgnoreCase("Fiction")) {
@@ -346,11 +490,11 @@ public class Database_Connectivity {
     public static ArrayList<Book> deleteRecordBook(int bookID) throws SQLException {
         Connection connection = databaseConnect();
         String sql = "DELETE FROM BOOKS WHERE bookID = ?";
-        PreparedStatement stmt = connection.prepareStatement(sql);
+        PreparedStatement statement = connection.prepareStatement(sql);
 
-        stmt.setInt(1, bookID);
+        statement.setInt(1, bookID);
 
-        int rowDeleted = stmt.executeUpdate();
+        int rowDeleted = statement.executeUpdate();
         if (rowDeleted > 0) {
             // Remove the user from the userList
             for (Book book : bookList) {
@@ -360,7 +504,7 @@ public class Database_Connectivity {
             }
         }
 
-        stmt.close();
+        statement.close();
         connection.close();
         return bookList;
     }

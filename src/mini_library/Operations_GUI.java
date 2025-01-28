@@ -7,7 +7,11 @@ package mini_library;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Predicate;
 import javax.swing.JOptionPane;
@@ -22,15 +26,19 @@ public class Operations_GUI extends javax.swing.JFrame {
     /**
      * Creates new form testReturn
      */
-    DefaultTableModel model;
+    ArrayList<Borrow_Record> borrowList = new ArrayList<>();
+    ArrayList<Return_Record> returnList = new ArrayList<>();
+    DefaultTableModel model1, model2;
 
     public Operations_GUI() {
         initComponents();
-        model = (DefaultTableModel) table.getModel();
+        model1 = (DefaultTableModel) table1.getModel();
+        model2 = (DefaultTableModel) table2.getModel();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setEnabledReturnPanel(false);
-        setEnabledBorrowPanel(false);
+        this.setTitle("Operations");
+        setEditableReturnPanel(false);
+        setEditableBorrowPanel(false);
     }
 
     /**
@@ -73,7 +81,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         borTotalChargeTF = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        table = new javax.swing.JTable();
+        table1 = new javax.swing.JTable();
         returnPanel = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
@@ -113,20 +121,26 @@ public class Operations_GUI extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 255));
 
-        jLabel1.setFont(new java.awt.Font("Rockwell", 3, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Bodoni MT Black", 0, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("OPERATIONS");
+
+        tabbedPane.setBackground(new java.awt.Color(0, 51, 255));
 
         borrowPanel.setBackground(new java.awt.Color(0, 0, 153));
 
         jPanel4.setBackground(new java.awt.Color(0, 0, 153));
 
         jLabel2.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("User ID");
 
         jLabel3.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Book ID");
 
         jLabel4.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Availability Status");
 
         borUseridTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
@@ -152,9 +166,11 @@ public class Operations_GUI extends javax.swing.JFrame {
         });
 
         jLabel5.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Name");
 
         jLabel6.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Title");
 
         borBookidTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
@@ -173,6 +189,7 @@ public class Operations_GUI extends javax.swing.JFrame {
         jPanel9.setBackground(new java.awt.Color(0, 0, 153));
 
         jLabel8.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Borrowed Count");
 
         borCountTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
@@ -183,19 +200,48 @@ public class Operations_GUI extends javax.swing.JFrame {
         });
 
         jLabel7.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Borrowed Date");
 
         borBorrowDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        borBorrowDateTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                borBorrowDateTFFocusLost(evt);
+            }
+        });
+        borBorrowDateTF.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                borBorrowDateTFMouseClicked(evt);
+            }
+        });
+        borBorrowDateTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borBorrowDateTFActionPerformed(evt);
+            }
+        });
+        borBorrowDateTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                borBorrowDateTFKeyReleased(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Daily Charge");
 
         borChargeTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        borChargeTF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                borChargeTFKeyReleased(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Due Date");
 
         jLabel11.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("Total Charge");
 
         borDueDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
@@ -235,25 +281,24 @@ public class Operations_GUI extends javax.swing.JFrame {
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addGap(9, 9, 9)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(borTotalChargeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel11))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel9Layout.createSequentialGroup()
-                            .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel8)
-                                .addComponent(borCountTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel10))
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel7)
-                                .addComponent(borBorrowDateTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(borCountTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel7)
+                        .addComponent(borBorrowDateTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel10)
                         .addComponent(borDueDateTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
-                    .addComponent(borChargeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(borChargeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(borTotalChargeTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel11)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -313,15 +358,15 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        table.setModel(new javax.swing.table.DefaultTableModel(
+        table1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "User ID", "Name", "Book ID", "Title", "Days Borrowed", "Total Charge"
+                "User ID", "Name", "Book ID", "Title", "Daily Charge", "Total Charge"
             }
         ));
-        jScrollPane1.setViewportView(table);
+        jScrollPane1.setViewportView(table1);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -370,33 +415,43 @@ public class Operations_GUI extends javax.swing.JFrame {
         jPanel7.setBackground(new java.awt.Color(0, 0, 153));
 
         jLabel13.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
         jLabel13.setText("User ID");
 
         jLabel14.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
         jLabel14.setText("Book ID");
 
         jLabel15.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Name");
 
         jLabel16.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("Title");
 
         jLabel17.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("Borrowed Date");
 
         jLabel18.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
         jLabel18.setText("Returned Date");
 
         jLabel19.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setText("Days Borrowed");
 
         jLabel20.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
         jLabel20.setText("Borrowing Charge");
 
         jLabel21.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
         jLabel21.setText("Late Fee");
 
         jLabel22.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
         jLabel22.setText("Total Charge");
 
         retUseridTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
@@ -421,7 +476,6 @@ public class Operations_GUI extends javax.swing.JFrame {
         });
 
         retBorrowDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
-        retBorrowDateTF.setText("(yyyy-mm-dd)");
         retBorrowDateTF.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 retBorrowDateTFMouseClicked(evt);
@@ -434,7 +488,11 @@ public class Operations_GUI extends javax.swing.JFrame {
         });
 
         retReturnDateTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
-        retReturnDateTF.setText("(yyyy-mm-dd)");
+        retReturnDateTF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                retReturnDateTFFocusLost(evt);
+            }
+        });
         retReturnDateTF.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 retReturnDateTFMouseClicked(evt);
@@ -448,6 +506,11 @@ public class Operations_GUI extends javax.swing.JFrame {
         retLateFeeTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
         retTotalChargeTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        retTotalChargeTF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                retTotalChargeTFActionPerformed(evt);
+            }
+        });
 
         retTitleTF.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
 
@@ -595,7 +658,9 @@ public class Operations_GUI extends javax.swing.JFrame {
 
         tabbedPane.addTab("Return Book Record", returnPanel);
 
-        backBtn.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        backBtn.setBackground(new java.awt.Color(0, 153, 153));
+        backBtn.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        backBtn.setForeground(new java.awt.Color(0, 0, 0));
         backBtn.setText("BACK");
         backBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -603,6 +668,9 @@ public class Operations_GUI extends javax.swing.JFrame {
             }
         });
 
+        insertBtn.setBackground(new java.awt.Color(0, 204, 51));
+        insertBtn.setFont(new java.awt.Font("Rockwell", 1, 14)); // NOI18N
+        insertBtn.setForeground(new java.awt.Color(0, 0, 0));
         insertBtn.setText("INSERT");
         insertBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -610,6 +678,9 @@ public class Operations_GUI extends javax.swing.JFrame {
             }
         });
 
+        refreshBtn.setBackground(new java.awt.Color(255, 255, 0));
+        refreshBtn.setFont(new java.awt.Font("Rockwell", 1, 14)); // NOI18N
+        refreshBtn.setForeground(new java.awt.Color(0, 0, 0));
         refreshBtn.setText("REFRESH");
         refreshBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -627,13 +698,13 @@ public class Operations_GUI extends javax.swing.JFrame {
                         .addGap(32, 32, 32)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1321, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(backBtn))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(477, 477, 477)
-                        .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(460, 460, 460)
+                        .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(50, 50, 50)
                         .addComponent(insertBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(17, Short.MAX_VALUE))
@@ -651,7 +722,7 @@ public class Operations_GUI extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(insertBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(refreshBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -668,21 +739,83 @@ public class Operations_GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void setEnabledReturnPanel(boolean condition) {
-        retNameTF.setEnabled(condition);
-        retTitleTF.setEnabled(condition);
-        retBorrowChargeTF.setEnabled(condition);
-        retLateFeeTF.setEnabled(condition);
-        retTotalChargeTF.setEnabled(condition);
+    public void setEditableReturnPanel(boolean condition) {
+        retNameTF.setEditable(condition);
+        retTitleTF.setEditable(condition);
+        retBorrowDateTF.setEditable(condition);
+        retDayBorrowTF.setEditable(condition);
+        retBorrowChargeTF.setEditable(condition);
+        retLateFeeTF.setEditable(condition);
+        retTotalChargeTF.setEditable(condition);
 
     }
 
-    public void setEnabledBorrowPanel(boolean condition) {
-        borNameTF.setEnabled(condition);
-        borTitleTF.setEnabled(condition);
-        borDueDateTF.setEnabled(condition);
-        borTotalChargeTF.setEnabled(condition);
+    public void setEditableBorrowPanel(boolean condition) {
+        borNameTF.setEditable(condition);
+        borTitleTF.setEditable(condition);
+        borStatusTF.setEditable(condition);
+        borCountTF.setEditable(condition);
+        borDueDateTF.setEditable(condition);
+        borTotalChargeTF.setEditable(condition);
 
+    }
+
+    public boolean isSomeFieldEmpty() {
+        int selectedTabIndex = tabbedPane.getSelectedIndex();
+        String selectedTabTitle = tabbedPane.getTitleAt(selectedTabIndex);
+
+        if (selectedTabTitle.equals("Borrow Book Record")) {
+            String userid = borUseridTF.getText();
+            String bookid = borBookidTF.getText();
+            String borrowDate = borBorrowDateTF.getText();
+
+            if (userid.isEmpty() || bookid.isEmpty() || borrowDate.isEmpty()) {
+                return true;
+            }
+        } else if (selectedTabTitle.equals("Return Book Record")) {
+            String userid = retUseridTF.getText();
+            String bookid = retBookidTF.getText();
+            String reteurnDate = retReturnDateTF.getText();
+
+            if (userid.isEmpty() || bookid.isEmpty() || reteurnDate.isEmpty()) {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    public void resetAllField() {
+        int selectedTabIndex = tabbedPane.getSelectedIndex();
+        String selectedTabTitle = tabbedPane.getTitleAt(selectedTabIndex);
+
+        if (selectedTabTitle.equals("Borrow Book Record")) {
+            // Reset fields for borrowing
+            borUseridTF.setText("");
+            borBookidTF.setText("");
+            borNameTF.setText("");
+            borTitleTF.setText("");
+            borStatusTF.setText("");
+            borCountTF.setText("");
+            borBorrowDateTF.setText("");
+            borChargeTF.setText("");
+            borDueDateTF.setText("");
+            borTotalChargeTF.setText("");
+
+        } else {
+            //Reset all field for the returning
+            retUseridTF.setText("");
+            retBookidTF.setText("");
+            retNameTF.setText("");
+            retTitleTF.setText("");
+            retBorrowDateTF.setText("");
+            retReturnDateTF.setText("");
+            retDayBorrowTF.setText("");
+            retBorrowChargeTF.setText("");
+            retLateFeeTF.setText("");
+            retTotalChargeTF.setText("");
+        }
     }
 
     public void printName(String text) {
@@ -695,6 +828,8 @@ public class Operations_GUI extends javax.swing.JFrame {
 
             for (User user : userList) {
                 retNameTF.setText(user.getName());
+                borNameTF.setText(user.getName());
+
             }
 
         } catch (SQLException e) {
@@ -707,14 +842,14 @@ public class Operations_GUI extends javax.swing.JFrame {
             return;
         }
 
-        Predicate<Book> bookID = book -> book.getBookID() == Integer.parseInt(text);
+        Predicate<Book> bookID = book -> book.getBookID() == Integer.parseInt(text.trim());
         try {
             ArrayList<Book> bookList = Database_Connectivity.searchBy(bookID);
 
             for (Book book : bookList) {
                 retTitleTF.setText(book.getTitle());
                 borTitleTF.setText(book.getTitle());
-                
+
                 borStatusTF.setText(String.valueOf(book.isAvailable()));
             }
 
@@ -732,7 +867,6 @@ public class Operations_GUI extends javax.swing.JFrame {
             return true;
 
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(null, "Invalid date format. Use YYYY-MM-DD");
         }
         return false;
     }
@@ -745,6 +879,37 @@ public class Operations_GUI extends javax.swing.JFrame {
 
     private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
         // TODO add your handling code here:
+        int selectedTabIndex = tabbedPane.getSelectedIndex();
+        String selectedTabTitle = tabbedPane.getTitleAt(selectedTabIndex);
+        String name = retNameTF.getText();
+        String title = retTitleTF.getText();
+
+        if (selectedTabTitle.equals("Borrow Book Record")) {
+            model1.setRowCount(0);
+            try {
+                ArrayList<Borrow_Record> resultList = Database_Connectivity.displayAllRecordBorrow(name, title);
+
+                for (Borrow_Record br : resultList) {
+                    model1.addRow(new Object[]{br.getUserID(), br.getName(), br.getBookID(), br.getTitle(), br.getDailyCharge(), br.getTotalCharge()});
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error when fetching the data from the database.");
+                return;
+            }
+
+        } else {
+            try {
+                model2.setRowCount(0);
+                ArrayList<Return_Record> resultList = Database_Connectivity.displayAllRecordReturn(name, title);
+
+                for (Return_Record rr : resultList) {
+                    model2.addRow(new Object[]{rr.getUserID(), rr.getName(), rr.getBookID(), rr.getTitle(), rr.getDaysBorrowed(), rr.getTotalCharge()});
+
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error when fetching the data from the database.");
+            }
+        }
     }//GEN-LAST:event_refreshBtnActionPerformed
 
     private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
@@ -754,9 +919,9 @@ public class Operations_GUI extends javax.swing.JFrame {
         int bookID;
         String name;
         String title;
-        String status;
+        boolean status;
 
-        int borrowedCount;
+        int borrowedCount = 0;
         double dailyCharge;
         String dueDate;
 
@@ -767,53 +932,98 @@ public class Operations_GUI extends javax.swing.JFrame {
         double lateFee;
         double totalCharge;
 
-        //check if it is currently on borrow tab
-        if (tabbedPane.getSelectedIndex() == 0) {
-            //borrow tab
-            userID = Integer.parseInt(borUseridTF.getText());
-            name = borNameTF.getText();
-            bookID = Integer.parseInt(borBookidTF.getText());
-            title = borTitleTF.getText();
-            status = borStatusTF.getText();
+        //check if it is currently on borrow tab or return tab
+        int selectedTabIndex = tabbedPane.getSelectedIndex();
+        String selectedTabTitle = tabbedPane.getTitleAt(selectedTabIndex);
 
-            borrowedCount = Integer.parseInt(borCountTF.getText());
-            borrowedDate = borBorrowDateTF.getText();
-            dailyCharge = Integer.parseInt(borChargeTF.getText());
-            dueDate = borDueDateTF.getText();
-            totalCharge = Integer.parseInt(borTotalChargeTF.getText());
-
-            //check if date is in valid format
-            if (!isDateValid(borrowedDate) && !isDateValid(dueDate)) {
-                return;
-
-            } else {
-                //store in the database
-
-                //display in the table only selected value
-            }
-        } else {
-            //return tab
-            userID = Integer.parseInt(retUseridTF.getText());
-            name = retNameTF.getText();
-            bookID = Integer.parseInt(retBookidTF.getText());
-            title = retTitleTF.getText();
-
-            borrowedDate = retBorrowDateTF.getText();
-            returnedDate = retReturnDateTF.getText();
-            daysBorrowed = Integer.parseInt(retDayBorrowTF.getText());
-            borrowingCharge = Integer.parseInt(retBorrowChargeTF.getText());
-            lateFee = Integer.parseInt(retLateFeeTF.getText());
-            totalCharge = Integer.parseInt(retTotalChargeTF.getText());
-
-            if (!isDateValid(borrowedDate) && !isDateValid(returnedDate)) {
-                return;
-
-            } else {
-
-            }
+        if (isSomeFieldEmpty()) {
+            JOptionPane.showMessageDialog(null, "Some field value is missing.");
+            return;
         }
+        try {
+            if (selectedTabTitle.equals("Borrow Book Record")) {
+                userID = Integer.parseInt(borUseridTF.getText());
+                bookID = Integer.parseInt(borBookidTF.getText());
+                name = borNameTF.getText();
+                title = borTitleTF.getText();
+                status = Boolean.parseBoolean(borStatusTF.getText());
 
+                borrowedCount = Integer.parseInt(borCountTF.getText());
+                borrowedDate = borBorrowDateTF.getText();
+                dailyCharge = Integer.parseInt(borChargeTF.getText());
+                dueDate = borDueDateTF.getText();
+                totalCharge = Double.parseDouble(borTotalChargeTF.getText());
 
+                if (isDateValid(borrowedDate) && isDateValid(dueDate)) {
+                    try {
+                        if (Database_Connectivity.isEligibleToBorrow(userID, bookID)) {
+                            Database_Connectivity.insertBorrowRecord(userID, bookID, status, borrowedDate, dueDate, dailyCharge, totalCharge);
+                            borrowList.add(new Borrow_Record(userID, name, bookID, title, status, borrowedDate, dueDate, dailyCharge, totalCharge));
+
+                            model1.insertRow(model1.getRowCount(), new Object[]{userID, name, bookID, title, dailyCharge, totalCharge});
+
+                            for (Book b : Book_Record_GUI.getBookList()) {
+                                if (b.getBookID() == bookID) {
+                                    b.setAvailable(false);
+                                    break;
+                                }
+                            }
+
+                            borrowedCount++;
+                            Database_Connectivity.updateUserBorrowedCount(borrowedCount, userID);
+                            Database_Connectivity.updateBookAvailability(bookID, false);
+
+                            JOptionPane.showMessageDialog(null, "Borrow Record is successfully added");
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, "Error inserting data into the database.");
+                    }
+                }
+
+            } else if (selectedTabTitle.equals("Return Book Record")) {
+                userID = Integer.parseInt(retUseridTF.getText());
+                bookID = Integer.parseInt(retBookidTF.getText());
+                name = retNameTF.getText();
+                title = retTitleTF.getText();
+
+                borrowedDate = retBorrowDateTF.getText();
+                returnedDate = retReturnDateTF.getText();
+                daysBorrowed = Integer.parseInt(retDayBorrowTF.getText());
+                borrowingCharge = Double.parseDouble(retBorrowChargeTF.getText());
+                lateFee = Double.parseDouble(retLateFeeTF.getText());
+                totalCharge = Double.parseDouble(retTotalChargeTF.getText());
+
+                if (isDateValid(borrowedDate) && isDateValid(returnedDate)) {
+                    try {
+                        if (Database_Connectivity.isCurrentlyBorrowed(userID, bookID)) {
+                            Database_Connectivity.insertReturnRecord(userID, bookID, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge);
+                            returnList.add(new Return_Record(userID, name, bookID, title, borrowedDate, returnedDate, daysBorrowed, borrowingCharge, lateFee, totalCharge));
+
+                            model2.insertRow(model2.getRowCount(), new Object[]{userID, name, bookID, title, daysBorrowed, totalCharge});
+
+                            for (Book b : Book_Record_GUI.getBookList()) {
+                                if (b.getBookID() == bookID) {
+                                    b.setAvailable(true);
+                                    break;
+                                }
+                            }
+
+                            borrowedCount--;
+                            Database_Connectivity.updateUserBorrowedCount(borrowedCount, userID);
+                            Database_Connectivity.updateBookAvailability(bookID, true);
+
+                            JOptionPane.showMessageDialog(null, "Return Record is successfully added");
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(null, "Error inserting data into the database.");
+                    }
+                }
+
+            }
+            resetAllField();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter a value.");
+        }
     }//GEN-LAST:event_insertBtnActionPerformed
 
     private void borUseridTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borUseridTFActionPerformed
@@ -844,35 +1054,177 @@ public class Operations_GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         String userID = retUseridTF.getText();
         printName(userID);
+
+        if (userID == null || userID.isEmpty()) {
+            retNameTF.setText("");
+        }
     }//GEN-LAST:event_retUseridTFFocusLost
 
     private void retBookidTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_retBookidTFFocusLost
         // TODO add your handling code here:
-        String bookID = retUseridTF.getText();
-        printTitle(bookID);
+        String useridStr = retUseridTF.getText();
+        String bookidStr = retBookidTF.getText();
+        printTitle(bookidStr);
+
+        try {
+            if ((useridStr.isEmpty() || useridStr == null) && (bookidStr.isEmpty() || bookidStr == null)) {
+                retNameTF.setText("");
+                retTitleTF.setText("");
+                return;
+            }
+
+            int userID = Integer.parseInt(useridStr);
+            int bookID = Integer.parseInt(bookidStr);
+
+            if (Database_Connectivity.isCurrentlyBorrowed(userID, bookID)) {
+                String borrowDate = Database_Connectivity.getBorrowDate(userID, bookID);
+
+                retBorrowDateTF.setText(borrowDate);
+
+            }
+        } catch (SQLException s) {
+            JOptionPane.showMessageDialog(null, "This user has not borrow this book!" + s.getMessage());
+        }
     }//GEN-LAST:event_retBookidTFFocusLost
 
     private void retBorrowDateTFMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_retBorrowDateTFMouseClicked
         // TODO add your handling code here:
-        retBorrowDateTF.setText("");
     }//GEN-LAST:event_retBorrowDateTFMouseClicked
 
     private void retReturnDateTFMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_retReturnDateTFMouseClicked
         // TODO add your handling code here:
-        retBorrowDateTF.setText("");
     }//GEN-LAST:event_retReturnDateTFMouseClicked
 
     private void borUseridTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_borUseridTFFocusLost
         // TODO add your handling code here:
         String userID = borUseridTF.getText();
         printName(userID);
+
+        if (userID == null || userID.isEmpty()) {
+            borNameTF.setText("");
+        }
     }//GEN-LAST:event_borUseridTFFocusLost
 
     private void borBookidTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_borBookidTFFocusLost
         // TODO add your handling code here:
-        String bookID = borUseridTF.getText();
+        String userID = borUseridTF.getText();
+        String bookID = borBookidTF.getText();
         printTitle(bookID);
+
+        try {
+            int count = Database_Connectivity.getBorrowedCount(Integer.parseInt(userID));
+            borCountTF.setText(String.valueOf(count));
+
+        } catch (SQLException s) {
+            JOptionPane.showMessageDialog(null, "There is no user found with that userID!" + s.getMessage());
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter a value.");
+        }
+
+        if (bookID == null || bookID.isEmpty()) {
+            borTitleTF.setText("");
+        }
     }//GEN-LAST:event_borBookidTFFocusLost
+
+    private void borBorrowDateTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borBorrowDateTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_borBorrowDateTFActionPerformed
+
+    private void borBorrowDateTFMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_borBorrowDateTFMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_borBorrowDateTFMouseClicked
+
+    private void borBorrowDateTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_borBorrowDateTFFocusLost
+        // TODO add your handling code here:
+        // Get the borrow date from the text field
+        String borrowDateStr = borBorrowDateTF.getText();
+
+        // Check if the date is valid
+        if (isDateValid(borrowDateStr)) {
+            try {
+                // Parse the borrow date
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date borrowDate = dateFormat.parse(borrowDateStr);
+
+                // Use Calendar to add 7 days
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(borrowDate);
+                calendar.add(Calendar.DAY_OF_YEAR, 7); // Add 7 days
+
+                // Format the new due date
+                String dueDateStr = dateFormat.format(calendar.getTime());
+
+                // Set the due date in the dueDateTF field
+                borDueDateTF.setText(dueDateStr);
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(null, "Invalid date format. Use YYYY-MM-DD.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid date format. Use YYYY-MM-DD");
+
+        }
+    }//GEN-LAST:event_borBorrowDateTFFocusLost
+
+    private void borChargeTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_borChargeTFKeyReleased
+        // TODO add your handling code here:
+        try {
+            double dailyCharge = Double.parseDouble(borChargeTF.getText());
+
+            double totalCharge = dailyCharge * 7;
+            borTotalChargeTF.setText(String.valueOf(totalCharge));
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter a value.");
+        }
+
+    }//GEN-LAST:event_borChargeTFKeyReleased
+
+    private void borBorrowDateTFKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_borBorrowDateTFKeyReleased
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_borBorrowDateTFKeyReleased
+
+    private void retReturnDateTFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_retReturnDateTFFocusLost
+        // TODO add your handling code here:
+        try {
+            String borrowedDate = retBorrowDateTF.getText();
+            String returnedDate = retReturnDateTF.getText();
+
+
+            // Parse the dates
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate borrowDate = LocalDate.parse(borrowedDate, formatter);
+            LocalDate returnDate = LocalDate.parse(returnedDate, formatter);
+
+            // Calculate days borrowed
+            int daysBorrowed = (int) ChronoUnit.DAYS.between(borrowDate, returnDate);
+
+            // Update the daysBorrowed field in the UI
+            retDayBorrowTF.setText(String.valueOf(daysBorrowed));
+            
+            final double DAILY_LATE_CHARGE = 2;
+            double borrowingCharge = 7;
+            double lateFee = 0;
+            double totalCharge = 0;
+            
+            if (daysBorrowed > 7) {
+                lateFee = DAILY_LATE_CHARGE * (daysBorrowed - 7);
+                
+            }
+            totalCharge = borrowingCharge + lateFee;
+            retBorrowChargeTF.setText(String.valueOf(borrowingCharge));
+            retLateFeeTF.setText(String.valueOf(lateFee));
+            retTotalChargeTF.setText(String.valueOf(totalCharge));
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please make sure you have input the correct value.");
+        }
+    }//GEN-LAST:event_retReturnDateTFFocusLost
+
+    private void retTotalChargeTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_retTotalChargeTFActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_retTotalChargeTFActionPerformed
 
     /**
      * @param args the command line arguments
@@ -969,7 +1321,7 @@ public class Operations_GUI extends javax.swing.JFrame {
     private javax.swing.JTextField retUseridTF;
     private javax.swing.JPanel returnPanel;
     private javax.swing.JTabbedPane tabbedPane;
-    private javax.swing.JTable table;
+    private javax.swing.JTable table1;
     private javax.swing.JTable table2;
     // End of variables declaration//GEN-END:variables
 }
